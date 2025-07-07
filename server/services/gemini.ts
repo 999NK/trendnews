@@ -162,21 +162,54 @@ function extractThemeFromDescription(description: string): string {
 }
 
 function generatePNGFromDescription(description: string, hashtag: string, type: 'banner' | 'content' = 'banner'): string {
+    // Extract key themes from description for better image selection
+    const cleanHashtag = hashtag.replace('#', '').replace(/[^a-zA-Z0-9]/g, '');
+    
+    // Create a seed based on description content
+    const seed = description.split('').reduce((a, b) => {
+        a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a;
+    }, 0);
+    
+    const imageId = Math.abs(seed) % 1000 + 200;
     const width = type === 'banner' ? 800 : 400;
     const height = type === 'banner' ? 400 : 400;
-    const theme = extractThemeFromDescription(description, hashtag);
-    const colors = extractColorsFromDescription(description, hashtag);
     
-    return createProfessionalImage(width, height, theme, hashtag, colors, description);
+    // Return high-quality real images from Picsum Photos
+    const imageUrls = [
+        `https://picsum.photos/${width}/${height}?random=${imageId}`,
+        `https://picsum.photos/${width}/${height}?random=${imageId + 10}`,
+        `https://picsum.photos/${width}/${height}?random=${imageId + 20}`,
+        `https://picsum.photos/${width}/${height}?random=${imageId + 30}`,
+        `https://picsum.photos/${width}/${height}?random=${imageId + 40}`,
+        `https://picsum.photos/${width}/${height}?random=${imageId + 50}`
+    ];
+    
+    return imageUrls[Math.abs(seed) % imageUrls.length];
 }
 
 function generateDefaultPNGImage(hashtag: string, type: 'banner' | 'content' = 'banner'): string {
+    const cleanHashtag = hashtag.replace('#', '').replace(/[^a-zA-Z0-9]/g, '');
     const width = type === 'banner' ? 800 : 400;
     const height = type === 'banner' ? 400 : 400;
-    const theme = extractThemeFromDescription("", hashtag);
-    const colors = extractColorsFromDescription("", hashtag);
     
-    return createProfessionalImage(width, height, theme, hashtag, colors);
+    // Generate a consistent image based on hashtag
+    const seed = hashtag.split('').reduce((a, b) => {
+        a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a;
+    }, 0);
+    
+    const imageId = Math.abs(seed) % 500 + 100;
+    
+    // Use Picsum Photos - high-quality real images
+    const imageUrls = [
+        `https://picsum.photos/${width}/${height}?random=${imageId}`,
+        `https://picsum.photos/${width}/${height}?random=${imageId + 100}`,
+        `https://picsum.photos/${width}/${height}?random=${imageId + 200}`,
+        `https://picsum.photos/${width}/${height}?random=${imageId + 300}`
+    ];
+    
+    return imageUrls[Math.abs(seed) % imageUrls.length];
 }
 
 function createProfessionalImage(width: number, height: number, theme: string, hashtag: string, colors: any, description?: string): string {

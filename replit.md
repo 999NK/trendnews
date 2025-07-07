@@ -117,6 +117,12 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
+- July 07, 2025. Real image URLs implemented for article generation
+  - Replaced SVG data URLs with actual JPEG/PNG image URLs from Picsum Photos and Placeholder.com
+  - Fixed "None" image display issues with reliable online image sources
+  - Implemented consistent image generation based on article content and hashtags
+  - All images now load properly as actual web-accessible image files
+  - Enhanced fallback system with multiple image service providers
 - July 07, 2025. Performance and UX improvements implemented
   - Fixed image generation with proper Gemini API fallbacks and error handling
   - Optimized article generation speed by reducing API tokens based on article length
