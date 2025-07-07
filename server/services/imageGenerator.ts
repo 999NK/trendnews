@@ -38,9 +38,9 @@ export function generateArticleImage(title: string, hashtag: string): string {
       <circle cx="50" cy="350" r="40" fill="${color.text}" opacity="0.1"/>
       <rect x="450" y="300" width="120" height="80" rx="10" fill="${color.text}" opacity="0.05"/>
       
-      <!-- Logo/AI Icon -->
+      <!-- Logo/News Icon -->
       <circle cx="100" cy="100" r="35" fill="${color.text}" opacity="0.2"/>
-      <text x="100" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="${color.text}">AI</text>
+      <text x="100" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="${color.text}">📰</text>
       
       <!-- Hashtag -->
       <text x="50" y="180" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="${color.text}" opacity="0.8">${hashtag}</text>
@@ -53,7 +53,7 @@ export function generateArticleImage(title: string, hashtag: string): string {
       </foreignObject>
       
       <!-- Footer -->
-      <text x="50" y="370" font-family="Arial, sans-serif" font-size="14" fill="${color.text}" opacity="0.7">Grok AI News • Gerado automaticamente por IA</text>
+      <text x="50" y="370" font-family="Arial, sans-serif" font-size="14" fill="${color.text}" opacity="0.7">TrendNews • Notícias em Tempo Real</text>
     </svg>
   `;
   
@@ -75,11 +75,11 @@ export function generateDefaultImage(hashtag: string): string {
       <rect width="400" height="300" fill="url(#defaultGrad)"/>
       
       <circle cx="200" cy="120" r="30" fill="white" opacity="0.2"/>
-      <text x="200" y="130" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white">AI</text>
+      <text x="200" y="130" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white">📰</text>
       
       <text x="200" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="white" opacity="0.9">${hashtag}</text>
       
-      <text x="200" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white" opacity="0.7">Grok AI News</text>
+      <text x="200" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white" opacity="0.7">TrendNews</text>
     </svg>
   `;
   

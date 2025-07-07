@@ -40,14 +40,16 @@ export async function generateArticle(options: ArticleGenerationOptions): Promis
     };
 
     const prompt = `
-Você é um jornalista sênior do TrendNews especializado em criar posts de blog de alta qualidade e viralizáveis.
+Você é um jornalista investigativo sênior do TrendNews, especializado em criar artigos de blog profissionais, detalhados e envolventes.
 
-Crie um artigo EXCEPCIONAL sobre: ${hashtag}
+Crie um artigo COMPLETO e PROFISSIONAL sobre: ${hashtag}
 
 PADRÕES OBRIGATÓRIOS DE BLOG PROFISSIONAL:
 
-1. TÍTULO ULTRA-ATRAENTE
-- Chamativo e impactante (pode ser ligeiramente tendencioso)
+1. TÍTULO ULTRA-ATRAENTE E PROFISSIONAL
+- Chamativo mas jornalístico (evite clickbait extremo)
+- Sem hashtags ou símbolos especiais
+- Foque em benefícios, curiosidades ou impacto
 - NUNCA use hashtags (#) no título
 - Desperte curiosidade máxima
 - Exemplos: "O Escândalo que Abala o Brasil", "A Verdade que Ninguém Conta"
@@ -114,26 +116,40 @@ FORMATO HTML OBRIGATÓRIO:
 <h2>Dois Lados da Questão</h2>
 <h3>Argumentos Favoráveis</h3>
 <ul>
-<li>Ponto favorável 1</li>
-<li>Ponto favorável 2</li>
-<li>Ponto favorável 3</li>
+<li>Ponto favorável 1 com dados</li>
+<li>Ponto favorável 2 com evidências</li>
+<li>Ponto favorável 3 com estatísticas</li>
 </ul>
 
 <h3>Argumentos Contrários</h3>
 <ul>
-<li>Ponto contrário 1</li>
-<li>Ponto contrário 2</li>
-<li>Ponto contrário 3</li>
+<li>Ponto contrário 1 com dados</li>
+<li>Ponto contrário 2 com evidências</li>
+<li>Ponto contrário 3 com estatísticas</li>
 </ul>
 
+<h2>Análise Aprofundada</h2>
+<p>Desenvolvimento detalhado do tema com múltiplas perspectivas.</p>
+
 <h2>Impacto no Brasil</h2>
-<p>Desenvolvimento com exemplos brasileiros.</p>
+<p>Como isso afeta especificamente o contexto brasileiro.</p>
 
-<h2>O Que Especialistas Dizem</h2>
-<p>Opinião de especialistas e análises.</p>
+<h2>Especialistas Opinam</h2>
+<p>Citações e análises de especialistas no assunto.</p>
 
-<h2>Perspectivas e Conclusão</h2>
-<p>Insights finais com CTA para engajamento máximo.</p>
+<h2>Dados e Estatísticas</h2>
+<p>Informações quantitativas relevantes e atualizadas.</p>
+
+<h2>Conclusão</h2>
+<p>Síntese final com call-to-action para engajamento.</p>
+
+IMPORTANTE: 
+- Conte uma HISTÓRIA envolvente, não apenas liste fatos
+- Use TRANSIÇÕES suaves entre seções
+- Inclua EXEMPLOS PRÁTICOS e CASOS REAIS
+- Mantenha o leitor ENGAJADO do início ao fim
+- NUNCA mencione que o conteúdo foi gerado por IA
+- Escreva como um jornalista experiente escreveria
 
 RETORNE JSON VÁLIDO:
 {
@@ -157,7 +173,7 @@ RETORNE JSON VÁLIDO:
         }
       ],
       response_format: { type: "json_object" },
-      max_tokens: 2000,
+      max_tokens: 4000,
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -166,8 +182,11 @@ RETORNE JSON VÁLIDO:
       throw new Error("Invalid response format from Grok AI");
     }
 
-    // Generate image with Gemini AI
-    const imageUrl = await generateGeminiImage(result.title, options.hashtag);
+    // Generate image with Gemini AI or fallback to generic image
+    let imageUrl = await generateGeminiImage(result.title, options.hashtag);
+    if (!imageUrl) {
+      imageUrl = generateArticleImage(result.title, options.hashtag);
+    }
     
     // Generate SEO meta description
     const metaDescription = await generateSEOMetaDescription(result.title, result.content);

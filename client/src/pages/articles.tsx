@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Search, Newspaper, Trash2, ExternalLink, Globe, EyeOff, Calendar, Hash, FileText, AlertCircle, CheckCircle, Eye } from "lucide-react";
+import { Search, Newspaper, Trash2, ExternalLink, Globe, EyeOff, Calendar, Hash, FileText, AlertCircle, CheckCircle, Eye, ThumbsUp, ThumbsDown, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -76,6 +76,60 @@ export default function Articles() {
     },
   });
 
+  const approveMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("POST", `/api/articles/${id}/approve`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+      toast({
+        title: "Sucesso",
+        description: "Artigo aprovado com sucesso",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Falha ao aprovar artigo",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("POST", `/api/articles/${id}/reject`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+      toast({
+        title: "Sucesso",
+        description: "Artigo rejeitado",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Falha ao rejeitar artigo",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const submitForReviewMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("POST", `/api/articles/${id}/submit-for-review`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/articles"] });
+      toast({
+        title: "Sucesso",
+        description: "Artigo enviado para análise",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Falha ao enviar artigo para análise",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDelete = (id: number) => {
     if (confirm("Tem certeza que deseja excluir este artigo?")) {
       deleteMutation.mutate(id);
@@ -88,6 +142,18 @@ export default function Articles() {
 
   const handleUnpublish = (id: number) => {
     unpublishMutation.mutate(id);
+  };
+
+  const handleApprove = (id: number) => {
+    approveMutation.mutate(id);
+  };
+
+  const handleReject = (id: number) => {
+    rejectMutation.mutate(id);
+  };
+
+  const handleSubmitForReview = (id: number) => {
+    submitForReviewMutation.mutate(id);
   };
 
   const filteredArticles = articles?.filter(article =>
@@ -165,17 +231,43 @@ export default function Articles() {
                             {article.title}
                           </h3>
                           <div className="flex items-center space-x-2 ml-4">
-                            {article.published ? (
+                            {/* Status-based actions */}
+                            {article.status === 'draft' && (
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleUnpublish(article.id)}
-                                disabled={unpublishMutation.isPending}
-                                title="Despublicar artigo"
+                                onClick={() => handleSubmitForReview(article.id)}
+                                disabled={submitForReviewMutation.isPending}
+                                title="Enviar para análise"
                               >
-                                <EyeOff className="w-4 h-4 text-orange-500" />
+                                <Clock className="w-4 h-4 text-blue-500" />
                               </Button>
-                            ) : (
+                            )}
+                            
+                            {article.status === 'under_review' && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleApprove(article.id)}
+                                  disabled={approveMutation.isPending}
+                                  title="Aprovar artigo"
+                                >
+                                  <ThumbsUp className="w-4 h-4 text-green-500" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleReject(article.id)}
+                                  disabled={rejectMutation.isPending}
+                                  title="Rejeitar artigo"
+                                >
+                                  <ThumbsDown className="w-4 h-4 text-red-500" />
+                                </Button>
+                              </>
+                            )}
+                            
+                            {article.status === 'approved' && !article.published && (
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -186,6 +278,19 @@ export default function Articles() {
                                 <Globe className="w-4 h-4 text-green-500" />
                               </Button>
                             )}
+                            
+                            {article.published && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleUnpublish(article.id)}
+                                disabled={unpublishMutation.isPending}
+                                title="Despublicar artigo"
+                              >
+                                <EyeOff className="w-4 h-4 text-orange-500" />
+                              </Button>
+                            )}
+                            
                             <Link href={`/articles/${article.id}`}>
                               <Button variant="ghost" size="sm" title="Ver artigo">
                                 <Eye className="w-4 h-4" />
@@ -213,14 +318,17 @@ export default function Articles() {
                                 variant={article.published ? "default" : "secondary"}
                                 className={`text-xs ${
                                   article.published ? "bg-green-500 text-white" : 
-                                  article.status === "processing" ? "bg-yellow-500 text-black" : 
+                                  article.status === "approved" ? "bg-blue-500 text-white" :
+                                  article.status === "under_review" ? "bg-yellow-500 text-black" : 
+                                  article.status === "rejected" ? "bg-red-500 text-white" : 
                                   "bg-gray-500 text-white"
                                 }`}
                               >
                                 {article.published ? "Publicado" : 
-                                 article.status === "published" ? "Rascunho" :
-                                 article.status === "processing" ? "Processando" : 
-                                 "Falha"}
+                                 article.status === "approved" ? "Aprovado" :
+                                 article.status === "under_review" ? "Em Análise" :
+                                 article.status === "rejected" ? "Rejeitado" : 
+                                 "Rascunho"}
                               </Badge>
                               {article.published && (
                                 <span className="text-xs text-muted-foreground flex items-center">

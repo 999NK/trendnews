@@ -8,7 +8,7 @@ export const articles = pgTable("articles", {
   content: text("content").notNull(),
   excerpt: text("excerpt").notNull(),
   hashtag: text("hashtag").notNull(),
-  status: text("status").notNull().default("published"), // published, processing, failed, draft
+  status: text("status").notNull().default("draft"), // draft, under_review, approved, rejected, published
   imageUrl: text("image_url"),
   metaDescription: text("meta_description"),
   seoKeywords: text("seo_keywords"),

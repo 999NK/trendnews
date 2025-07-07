@@ -59,7 +59,7 @@ A imagem deve ser visualmente atraente e relacionada ao tema do artigo.
 
         return null;
     } catch (error) {
-        console.error("Error generating image with Gemini:", error);
+        console.log("Gemini image generation failed, will use fallback:", error?.message || error);
         return null;
     }
 }

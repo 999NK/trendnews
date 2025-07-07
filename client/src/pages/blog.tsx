@@ -91,12 +91,14 @@ export default function Blog() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Loading skeleton */}
             {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="h-48 bg-muted rounded-lg mb-4"></div>
-                  <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-full mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-2/3"></div>
+              <Card key={i} className="animate-pulse border-0 shadow-lg">
+                <CardContent className="p-0">
+                  <div className="h-48 bg-gray-200 rounded-t-lg mb-4"></div>
+                  <div className="p-6">
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -124,15 +126,23 @@ export default function Blog() {
                 <Card className="overflow-hidden bg-card">
                   <div className="md:flex">
                     <div className="md:w-1/2">
-                      <div className="h-64 md:h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                        <div className="text-center p-8">
-                          <div className="w-16 h-16 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center">
-                            <span className="text-2xl font-bold text-white">AI</span>
+                      <div className="h-64 md:h-full bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center relative overflow-hidden">
+                        {featuredArticle.imageUrl ? (
+                          <img 
+                            src={featuredArticle.imageUrl} 
+                            alt={featuredArticle.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="text-center p-8">
+                            <div className="w-16 h-16 bg-red-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                              <span className="text-2xl">📰</span>
+                            </div>
+                            <Badge variant="secondary" className="mb-2">
+                              {featuredArticle.hashtag}
+                            </Badge>
                           </div>
-                          <Badge variant="secondary" className="mb-2">
-                            {featuredArticle.hashtag}
-                          </Badge>
-                        </div>
+                        )}
                       </div>
                     </div>
                     <div className="md:w-1/2 p-8">
@@ -152,7 +162,7 @@ export default function Blog() {
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <User className="w-4 h-4 mr-2" />
-                          Grok AI
+                          Redação TrendNews
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
@@ -183,15 +193,23 @@ export default function Blog() {
                   {otherArticles.map((article) => (
                     <Card key={article.id} className="overflow-hidden bg-card hover:shadow-lg transition-shadow group cursor-pointer">
                       <Link href={`/noticia/${article.id}`} className="block">
-                        <div className="h-48 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="w-12 h-12 bg-primary/20 rounded-full mx-auto mb-3 flex items-center justify-center">
-                              <span className="text-lg font-bold text-primary">AI</span>
+                        <div className="h-48 bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center relative overflow-hidden">
+                          {article.imageUrl ? (
+                            <img 
+                              src={article.imageUrl} 
+                              alt={article.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="text-center">
+                              <div className="w-12 h-12 bg-red-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                                <span className="text-lg">📰</span>
+                              </div>
+                              <Badge variant="secondary" className="text-xs">
+                                {article.hashtag}
+                              </Badge>
                             </div>
-                            <Badge variant="secondary" className="text-xs">
-                              {article.hashtag}
-                            </Badge>
-                          </div>
+                          )}
                         </div>
                         <CardContent className="p-6">
                           <h3 className="font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">

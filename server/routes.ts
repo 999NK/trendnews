@@ -70,6 +70,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Article approval workflow
+  app.post("/api/articles/:id/approve", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const article = await storage.updateArticle(id, { status: 'approved' });
+      
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      
+      res.json({ message: "Article approved successfully", article });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to approve article" });
+    }
+  });
+
+  app.post("/api/articles/:id/reject", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const article = await storage.updateArticle(id, { status: 'rejected' });
+      
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      
+      res.json({ message: "Article rejected successfully", article });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to reject article" });
+    }
+  });
+
+  app.post("/api/articles/:id/submit-for-review", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const article = await storage.updateArticle(id, { status: 'under_review' });
+      
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      
+      res.json({ message: "Article submitted for review successfully", article });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to submit article for review" });
+    }
+  });
+
   // Get single article
   app.get("/api/articles/:id", async (req, res) => {
     try {
@@ -177,7 +223,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         content: article.content,
         excerpt: article.excerpt,
         hashtag,
-        status: 'published'
+        status: 'draft',
+        imageUrl: article.imageUrl,
+        metaDescription: article.metaDescription,
+        seoKeywords: article.seoKeywords
       });
 
       await storage.createSystemLog({

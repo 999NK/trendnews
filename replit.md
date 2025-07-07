@@ -146,6 +146,14 @@ Changelog:
   - Added engaging introductions and call-to-action endings
   - Implemented data-driven content with Brazilian examples
   - Real trending topics integration (#CongressoDaMamata, etc.)
+- July 07, 2025. Article approval workflow and enhanced blog UX implemented
+  - Added complete article approval system (draft → under_review → approved → published)
+  - Manual article generation with review process (no automatic publishing)
+  - Enhanced Grok AI prompts for more complete, professional articles (2500-3500 words)
+  - Improved blog design with professional news site layout
+  - Fixed image generation with Gemini AI fallback to generic SVG images
+  - Removed all AI mentions from public blog (TrendNews branding)
+  - Added comprehensive status management and editorial workflow
 
 ## User Preferences
 
