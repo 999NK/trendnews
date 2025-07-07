@@ -175,6 +175,8 @@ O Brasil se compromete a:
         published: true,
         publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
         imageUrl: null,
+        metaDescription: null,
+        seoKeywords: null,
       },
       {
         title: "Revolução FinTech: Como as Startups Estão Mudando o Sistema Financeiro",
@@ -187,6 +189,8 @@ O ecossistema FinTech brasileiro continua em expansão acelerada, revolucionando
         published: false,
         publishedAt: null,
         imageUrl: null,
+        metaDescription: null,
+        seoKeywords: null,
       }
     ];
 
@@ -195,6 +199,8 @@ O ecossistema FinTech brasileiro continua em expansão acelerada, revolucionando
       const newArticle: Article = {
         ...article,
         id: this.currentArticleId++,
+        metaDescription: article.metaDescription || null,
+        seoKeywords: article.seoKeywords || null,
         createdAt: now,
         updatedAt: now,
       };
@@ -220,6 +226,8 @@ O ecossistema FinTech brasileiro continua em expansão acelerada, revolucionando
       status: article.status || "published",
       published: article.published || false,
       imageUrl: article.imageUrl || null,
+      metaDescription: article.metaDescription || null,
+      seoKeywords: article.seoKeywords || null,
       publishedAt: article.publishedAt || null,
       createdAt: now,
       updatedAt: now,

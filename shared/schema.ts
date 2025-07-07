@@ -10,6 +10,8 @@ export const articles = pgTable("articles", {
   hashtag: text("hashtag").notNull(),
   status: text("status").notNull().default("published"), // published, processing, failed, draft
   imageUrl: text("image_url"),
+  metaDescription: text("meta_description"),
+  seoKeywords: text("seo_keywords"),
   published: boolean("published").default(false),
   publishedAt: timestamp("published_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

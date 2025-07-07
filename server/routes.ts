@@ -211,6 +211,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate articles from selected hashtags
+  app.post("/api/generate-selected", async (req, res) => {
+    try {
+      const { hashtags } = req.body;
+      
+      if (!hashtags || !Array.isArray(hashtags) || hashtags.length === 0) {
+        return res.status(400).json({ message: "Please provide an array of hashtags" });
+      }
+
+      // Generate articles for selected hashtags
+      const results = [];
+      
+      for (const hashtag of hashtags) {
+        try {
+          const article = await generateArticle({
+            hashtag: hashtag,
+            length: 'medium',
+            style: 'engaging',
+            language: 'pt'
+          });
+
+          const createdArticle = await storage.createArticle({
+            title: article.title,
+            content: article.content,
+            excerpt: article.excerpt,
+            hashtag: hashtag,
+            status: 'published',
+            imageUrl: article.imageUrl,
+            metaDescription: article.metaDescription,
+            seoKeywords: article.seoKeywords,
+            published: true,
+            publishedAt: new Date(),
+          });
+
+          results.push(createdArticle);
+
+          await storage.createSystemLog({
+            message: `Successfully generated article for ${hashtag}`,
+            type: 'success',
+            details: { hashtag: hashtag, title: article.title }
+          });
+
+        } catch (error) {
+          await storage.createSystemLog({
+            message: `Failed to generate article for ${hashtag}`,
+            type: 'error',
+            details: { hashtag: hashtag, error: error.message }
+          });
+        }
+      }
+
+      res.json({ 
+        message: `Generated ${results.length} articles successfully`,
+        articles: results
+      });
+
+    } catch (error) {
+      res.status(500).json({ message: "Failed to generate articles" });
+    }
+  });
+
   // Get system logs
   app.get("/api/logs", async (req, res) => {
     try {

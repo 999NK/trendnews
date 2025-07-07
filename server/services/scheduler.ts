@@ -103,7 +103,12 @@ export async function runAutomatedGeneration() {
           content: article.content,
           excerpt: article.excerpt,
           hashtag: topic.hashtag,
-          status: 'published'
+          status: 'published',
+          imageUrl: article.imageUrl,
+          metaDescription: article.metaDescription,
+          seoKeywords: article.seoKeywords,
+          published: true,
+          publishedAt: new Date(),
         });
 
         // Update topic status to completed

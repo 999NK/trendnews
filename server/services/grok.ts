@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { generateArticleImage } from "./imageGenerator";
+import { generateArticleImage as generateGeminiImage, generateSEOMetaDescription } from './gemini';
 
 const openai = new OpenAI({ 
   baseURL: "https://api.x.ai/v1", 
@@ -13,11 +14,16 @@ export interface ArticleGenerationOptions {
   language: 'pt' | 'en' | 'es';
 }
 
-export async function generateArticle(options: ArticleGenerationOptions): Promise<{
+export interface ArticleGenerationResult {
   title: string;
   content: string;
   excerpt: string;
-}> {
+  imageUrl?: string;
+  metaDescription?: string;
+  seoKeywords?: string;
+}
+
+export async function generateArticle(options: ArticleGenerationOptions): Promise<ArticleGenerationResult> {
   try {
     const { hashtag, length, style, language } = options;
     
@@ -34,47 +40,63 @@ export async function generateArticle(options: ArticleGenerationOptions): Promis
     };
 
     const prompt = `
-Você é um jornalista sênior do TrendNews especializado em criar posts de blog de alta qualidade.
+Você é um jornalista sênior do TrendNews especializado em criar posts de blog de alta qualidade e viralizáveis.
 
-Crie um artigo profissional sobre: ${hashtag}
+Crie um artigo EXCEPCIONAL sobre: ${hashtag}
 
-PADRÕES OBRIGATÓRIOS DE BLOG:
+PADRÕES OBRIGATÓRIOS DE BLOG PROFISSIONAL:
 
-1. TÍTULO ATRAENTE
-- Claro, chamativo e que resume o tema
+1. TÍTULO ULTRA-ATRAENTE
+- Chamativo e impactante (pode ser ligeiramente tendencioso)
 - NUNCA use hashtags (#) no título
-- Deve despertar curiosidade
+- Desperte curiosidade máxima
+- Exemplos: "O Escândalo que Abala o Brasil", "A Verdade que Ninguém Conta"
 
-2. INTRODUÇÃO IMPACTANTE  
-- Máximo 2 parágrafos curtos
-- Contextualiza o tema
-- Prende a atenção do leitor
+2. INTRODUÇÃO MAGNÉTICA
+- Máximo 2 parágrafos curtos e impactantes
+- Contextualiza com dados chocantes
+- Prende atenção imediatamente
 
-3. ESTRUTURA ORGANIZADA
+3. ARGUMENTOS BALANCEADOS OBRIGATÓRIOS
+- Sempre apresente PRÓS E CONTRAS
+- Seção específica: "Dois Lados da Questão"
+- Múltiplas perspectivas especialistas
+- Dados contrastantes
+
+4. ESTRUTURA ORGANIZADA
 - Subtítulos (H2, H3) hierárquicos e claros
 - Parágrafos curtos (2-3 linhas máximo)
-- Listas com bullet points quando apropriado
+- Listas com bullet points
 - Fácil escaneabilidade
 
-4. CONTEÚDO ORIGINAL E RELEVANTE
+5. CONTEÚDO ORIGINAL E RELEVANTE
 - Dados concretos e estatísticas específicas
 - Exemplos práticos brasileiros
-- Fontes respeitáveis quando possível
+- Fontes respeitáveis citadas
 - Zero repetições de frases
 
-5. LINGUAGEM CLARA E OBJETIVA
+6. LINGUAGEM CLARA E OBJETIVA
 - Evite jargões excessivos
 - Frases diretas e impactantes
 - Português brasileiro correto
 - Tom ${style} mas acessível
 
-6. CHAMADA PARA AÇÃO
-- Termine com pergunta envolvente
-- Incentive comentários e discussão
+7. CTAs PARA ENGAJAMENTO MÁXIMO
+- Termine com pergunta controversa
+- Incentive compartilhamento
+- Chame para debate
+- Exemplo: "E você, concorda com essa decisão? Compartilhe sua opinião!"
 
-7. SEO NATURAL
-- Palavras-chave naturais sobre o tema
+8. SEO ULTRA-OTIMIZADO
+- Inclua MUITAS palavras-chave relacionadas
+- Variações do tema principal
+- Termos trending brasileiros
 - Conteúdo de ${lengthMap[length]}
+
+9. ELEMENTOS VISUAIS PREPARADOS
+- Inclua sugestões de imagens
+- Pontos para gráficos/infográficos
+- Dados que merecem visualização
 
 Especificações:
 - Idioma: ${languageMap[language]}
@@ -82,32 +104,43 @@ Especificações:
 - Tom: ${style}
 
 FORMATO HTML OBRIGATÓRIO:
-<h1>Título Principal (sem #)</h1>
-<p>Introdução impactante - parágrafo 1</p>
-<p>Introdução impactante - parágrafo 2</p>
+<h1>Título Ultra-Atraente (sem #)</h1>
+<p>Introdução magnética - parágrafo 1</p>
+<p>Introdução magnética - parágrafo 2</p>
 
-<h2>Subtítulo Principal</h2>
-<p>Parágrafo curto com dados específicos.</p>
-<p>Outro parágrafo breve e objetivo.</p>
+<h2>Os Fatos Que Você Precisa Saber</h2>
+<p>Dados específicos e impactantes.</p>
 
-<h3>Subtópico Específico</h3>
+<h2>Dois Lados da Questão</h2>
+<h3>Argumentos Favoráveis</h3>
 <ul>
-<li>Ponto relevante 1</li>
-<li>Ponto relevante 2</li>
-<li>Ponto relevante 3</li>
+<li>Ponto favorável 1</li>
+<li>Ponto favorável 2</li>
+<li>Ponto favorável 3</li>
 </ul>
 
-<h2>Outro Subtítulo Importante</h2>
+<h3>Argumentos Contrários</h3>
+<ul>
+<li>Ponto contrário 1</li>
+<li>Ponto contrário 2</li>
+<li>Ponto contrário 3</li>
+</ul>
+
+<h2>Impacto no Brasil</h2>
 <p>Desenvolvimento com exemplos brasileiros.</p>
 
+<h2>O Que Especialistas Dizem</h2>
+<p>Opinião de especialistas e análises.</p>
+
 <h2>Perspectivas e Conclusão</h2>
-<p>Insights finais com pergunta para engajamento.</p>
+<p>Insights finais com CTA para engajamento máximo.</p>
 
 RETORNE JSON VÁLIDO:
 {
-  "title": "título profissional sem hashtags",
+  "title": "título ultra-atraente sem hashtags",
   "content": "artigo completo em HTML seguindo estrutura",
-  "excerpt": "resumo atraente de 150-180 caracteres para despertar interesse"
+  "excerpt": "resumo atraente de 150-180 caracteres para despertar interesse",
+  "seoKeywords": "lista de palavras-chave separadas por vírgulas, mínimo 15 termos"
 }
 `;
 
@@ -133,17 +166,19 @@ RETORNE JSON VÁLIDO:
       throw new Error("Invalid response format from Grok AI");
     }
 
-    // Generate image for the article
-    const imageUrl = generateArticleImage(result.title, options.hashtag);
+    // Generate image with Gemini AI
+    const imageUrl = await generateGeminiImage(result.title, options.hashtag);
+    
+    // Generate SEO meta description
+    const metaDescription = await generateSEOMetaDescription(result.title, result.content);
 
     return {
       title: result.title,
       content: result.content,
       excerpt: result.excerpt,
-      hashtag: options.hashtag,
-      status: "draft",
-      imageUrl,
-      published: false
+      imageUrl: imageUrl || undefined,
+      metaDescription: metaDescription || undefined,
+      seoKeywords: result.seoKeywords || undefined,
     };
 
   } catch (error) {

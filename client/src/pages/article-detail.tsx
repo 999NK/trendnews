@@ -13,7 +13,7 @@ export default function ArticleDetail() {
   const articleId = location.split('/')[2]; // Extrai ID da URL /articles/:id
 
   const { data: article, isLoading } = useQuery({
-    queryKey: ["/api/articles", articleId],
+    queryKey: [`/api/articles/${articleId}`],
     enabled: !!articleId,
   });
 
