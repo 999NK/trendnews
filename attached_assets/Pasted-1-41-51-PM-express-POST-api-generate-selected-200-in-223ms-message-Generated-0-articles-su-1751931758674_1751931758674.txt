@@ -1,0 +1,71 @@
+1:41:51 PM [express] POST /api/generate-selected 200 in 223ms :: {"message":"Generated 0 articles su…
+11:41:51 PM [express] GET /api/articles 304 in 28ms :: [{"id":2,"title":"Sustentabilidade: Tendências…
+11:41:52 PM [express] GET /api/stats 200 in 145ms :: {"articlesGenerated":"2","trendingTopicsCount":"…
+11:42:04 PM [express] GET /api/logs 200 in 96ms :: [{"id":4,"message":"Failed to generate article for…
+11:42:04 PM [express] GET /api/articles 200 in 104ms :: [{"id":2,"title":"Sustentabilidade: Tendência…
+11:42:04 PM [express] GET /api/trending-topics 200 in 112ms :: [{"id":1,"hashtag":"#CongressoDaMamata…
+11:42:04 PM [express] GET /api/stats 200 in 144ms :: {"articlesGenerated":"2","trendingTopicsCount":"…
+Erro ao gerar notícia com Grok 3: PermissionDeniedError: 403 "API key is currently blocked: Blocked due to API key leak"
+    at Function.generate (/home/runner/workspace/node_modules/openai/src/core/error.ts:80:14)
+    at OpenAI.makeStatusError (/home/runner/workspace/node_modules/openai/src/client.ts:425:28)
+    at OpenAI.makeRequest (/home/runner/workspace/node_modules/openai/src/client.ts:646:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async generateArticle (/home/runner/workspace/server/services/grok.ts:178:22)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:279:27) {
+  status: 403,
+  headers: Headers {
+    date: 'Mon, 07 Jul 2025 23:42:08 GMT',
+    'content-type': 'application/json',
+    'transfer-encoding': 'chunked',
+    connection: 'keep-alive',
+    vary: 'origin, access-control-request-method, access-control-request-headers',
+    'access-control-allow-origin': '*',
+    'access-control-expose-headers': '*',
+    'cf-cache-status': 'DYNAMIC',
+    'set-cookie': '__cf_bm=5nX9vwPlqEZA0AazTU6D4ojEfYOzpr5pI8M5KS_lCM0-1751931728-1.0.1.1-PJYFtdQiBspz7UF5xkSIMxBiT3ynzKXWrYFZESiTXXTrU8bHGxH96DYbkbInB8rhspfFJ4ZIzaE9Ho1KY59jWl23SytQeoR1JDzSADWG.gY; path=/; expires=Tue, 08-Jul-25 00:12:08 GMT; domain=.x.ai; HttpOnly; Secure; SameSite=None',
+    'strict-transport-security': 'max-age=31536000',
+    server: 'cloudflare',
+    'cf-ray': '95bb3254e8cee990-ORD',
+    'content-encoding': 'gzip'
+  },
+  requestID: null,
+  error: 'API key is currently blocked: Blocked due to API key leak',
+  code: undefined,
+  param: undefined,
+  type: undefined
+}
+11:42:08 PM [express] POST /api/generate-selected 200 in 237ms :: {"message":"Generated 0 articles su…
+11:42:08 PM [express] GET /api/articles 304 in 24ms :: [{"id":2,"title":"Sustentabilidade: Tendências…
+11:42:08 PM [express] GET /api/stats 304 in 68ms :: {"articlesGenerated":"2","trendingTopicsCount":"1…
+Erro ao gerar notícia com Grok 3: PermissionDeniedError: 403 "API key is currently blocked: Blocked due to API key leak"
+    at Function.generate (/home/runner/workspace/node_modules/openai/src/core/error.ts:80:14)
+    at OpenAI.makeStatusError (/home/runner/workspace/node_modules/openai/src/client.ts:425:28)
+    at OpenAI.makeRequest (/home/runner/workspace/node_modules/openai/src/client.ts:646:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async generateArticle (/home/runner/workspace/server/services/grok.ts:178:22)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:279:27) {
+  status: 403,
+  headers: Headers {
+    date: 'Mon, 07 Jul 2025 23:42:12 GMT',
+    'content-type': 'application/json',
+    'transfer-encoding': 'chunked',
+    connection: 'keep-alive',
+    vary: 'origin, access-control-request-method, access-control-request-headers',
+    'access-control-allow-origin': '*',
+    'access-control-expose-headers': '*',
+    'cf-cache-status': 'DYNAMIC',
+    'set-cookie': '__cf_bm=YrDmQLHxA4QzMxjKUMTT3y9YW4NUGQmG7fcA55AmPOM-1751931732-1.0.1.1-jN._qylafuIXigLtrUs3gS2LYMpTNE2l4TFEy7rN.oMFkGOZIYi25f0RFJJeyHiz9uL0p5iGr8TBPuAOVZza9VE0aSH7cVB3MdcSvFfVGMo; path=/; expires=Tue, 08-Jul-25 00:12:12 GMT; domain=.x.ai; HttpOnly; Secure; SameSite=None',
+    'strict-transport-security': 'max-age=31536000',
+    server: 'cloudflare',
+    'cf-ray': '95bb32706ab01e95-ORD',
+    'content-encoding': 'gzip'
+  },
+  requestID: null,
+  error: 'API key is currently blocked: Blocked due to API key leak',
+  code: undefined,
+  param: undefined,
+  type: undefined
+}
+11:42:12 PM [express] POST /api/generate-selected 200 in 158ms :: {"message":"Generated 0 articles su…
+11:42:12 PM [express] GET /api/articles 304 in 23ms :: [{"id":2,"title":"Sustentabilidade: Tendências…
+11:42:12 PM [express] GET /api/stats 304 in 69ms :: {"articlesGenerated":"2","trendingTopicsCount":"1…
