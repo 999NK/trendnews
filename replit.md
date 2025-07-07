@@ -117,6 +117,13 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
+- July 07, 2025. Performance and UX improvements implemented
+  - Fixed image generation with proper Gemini API fallbacks and error handling
+  - Optimized article generation speed by reducing API tokens based on article length
+  - Added article deletion functionality with confirmation dialog
+  - Clarified article status workflow: draft → under_review → approved → published
+  - Enhanced error handling for all image generation services
+  - Improved article generation performance for short/medium articles
 - July 07, 2025. Migrated from Replit Agent to Replit environment
   - Fixed database connection and schema creation with PostgreSQL
   - Optimized API token limits and response times for better performance

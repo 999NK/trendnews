@@ -305,6 +305,15 @@ export default function Articles() {
                             >
                               <Trash2 className="w-4 h-4 text-red-500" />
                             </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(article.id)}
+                              disabled={deleteMutation.isPending}
+                              title="Excluir artigo"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </Button>
                           </div>
                         </div>
                         <p className="text-muted-foreground mb-4 line-clamp-3">{article.excerpt}</p>

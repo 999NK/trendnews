@@ -79,8 +79,8 @@ export async function generateArticle(
       es: "espanhol",
     };
 
-    // Obter contexto detalhado da hashtag no X
-    const hashtagContext = await researchTopic(hashtag);
+    // Obter contexto detalhado da hashtag no X - apenas para artigos longos
+    const hashtagContext = length === 'long' ? await researchTopic(hashtag) : `Hashtag ${hashtag} em discussão no Brasil.`;
 
     const prompt = `
     Você é um jornalista investigativo sênior do TrendNews, especializado em criar notícias profissionais, profundamente humanizadas, envolventes e narrativas, no estilo de "A Jornada de Ozzy Osbourne: Do Pioneirismo no Heavy Metal ao Ícone Cultural no Brasil". Sua missão é produzir uma notícia cativante que reflita as discussões reais da hashtag no X, com uma narrativa fluida, emocional e jornalística, sem qualquer tom genérico ou robótico.
@@ -189,7 +189,7 @@ Crie uma NOTÍCIA COMPLETA e PROFISSIONAL sobre a hashtag "${hashtag}", com base
         },
       ],
       response_format: { type: "json_object" },
-      max_tokens: 4000, // Otimizado para tempo de resposta
+      max_tokens: length === 'long' ? 4000 : (length === 'medium' ? 2500 : 1500), // Otimizado por tamanho
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -199,14 +199,28 @@ Crie uma NOTÍCIA COMPLETA e PROFISSIONAL sobre a hashtag "${hashtag}", com base
     }
 
     // Gerar 2 imagens por artigo
-    let bannerImageUrl = await generateGeminiImage(result.title, options.hashtag, 'banner');
-    let contentImageUrl = await generateGeminiImage(result.title, options.hashtag, 'content');
+    let bannerImageUrl = '';
+    let contentImageUrl = '';
     
-    // Fallback para imagens padrão se necessário
-    if (!bannerImageUrl) {
+    try {
+      bannerImageUrl = await generateGeminiImage(result.title, options.hashtag, 'banner');
+    } catch (error) {
+      console.error('Erro ao gerar imagem banner:', error);
       bannerImageUrl = generateArticleImage(result.title, options.hashtag);
     }
-    if (!contentImageUrl) {
+    
+    try {
+      contentImageUrl = await generateGeminiImage(result.title, options.hashtag, 'content');
+    } catch (error) {
+      console.error('Erro ao gerar imagem conteúdo:', error);
+      contentImageUrl = generateArticleImage(result.title, options.hashtag);
+    }
+    
+    // Fallback para imagens padrão se necessário
+    if (!bannerImageUrl || bannerImageUrl === 'None') {
+      bannerImageUrl = generateArticleImage(result.title, options.hashtag);
+    }
+    if (!contentImageUrl || contentImageUrl === 'None') {
       contentImageUrl = generateArticleImage(result.title, options.hashtag);
     }
 
@@ -248,7 +262,10 @@ Crie uma NOTÍCIA COMPLETA e PROFISSIONAL sobre a hashtag "${hashtag}", com base
       title: fallbackArticle.title,
       content: fallbackArticle.content,
       excerpt: fallbackArticle.excerpt,
-      seoKeywords: fallbackArticle.seoKeywords
+      seoKeywords: fallbackArticle.seoKeywords,
+      imageUrl: generateArticleImage(fallbackArticle.title, hashtag),
+      bannerImageUrl: generateArticleImage(fallbackArticle.title, hashtag),
+      contentImageUrl: generateArticleImage(fallbackArticle.title, hashtag)
     };
   }
 }
