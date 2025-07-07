@@ -117,6 +117,14 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
+- July 07, 2025. Migration from Replit Agent to Replit environment completed
+  - Fixed database connection and table creation with PostgreSQL
+  - Resolved API key mapping (XAI, Twitter, Gemini) with proper environment variables
+  - Fixed database field mapping between snake_case (database) and camelCase (frontend)
+  - Corrected image generation service with proper PNG file creation and serving
+  - All images now properly display in blog articles and detail pages
+  - Successfully tested article generation, image creation, and blog functionality
+  - Application running stable on port 5000 with full functionality restored
 - July 07, 2025. Gemini AI + Sharp PNG image generation implemented
   - Gemini generates contextual SVG designs based on article content and themes
   - Sharp converts SVG to high-quality PNG images with precise dimensions

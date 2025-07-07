@@ -432,20 +432,48 @@ export class DatabaseStorage implements IStorage {
         ...article,
         status: article.status || "published",
         published: article.published || false,
-        imageUrl: article.imageUrl || null,
-        publishedAt: article.publishedAt || null,
+        image_url: article.imageUrl || null,
+        banner_image_url: article.bannerImageUrl || null,
+        content_image_url: article.contentImageUrl || null,
+        published_at: article.publishedAt || null,
       })
       .returning();
-    return newArticle;
+    
+    // Map snake_case to camelCase for frontend compatibility
+    return {
+      ...newArticle,
+      bannerImageUrl: newArticle.banner_image_url,
+      contentImageUrl: newArticle.content_image_url,
+      imageUrl: newArticle.image_url,
+      publishedAt: newArticle.published_at
+    } as Article;
   }
 
   async updateArticle(id: number, article: Partial<InsertArticle>): Promise<Article | undefined> {
+    const updateData: any = { ...article };
+    
+    // Map camelCase to snake_case for database
+    if (article.imageUrl !== undefined) updateData.image_url = article.imageUrl;
+    if (article.bannerImageUrl !== undefined) updateData.banner_image_url = article.bannerImageUrl;
+    if (article.contentImageUrl !== undefined) updateData.content_image_url = article.contentImageUrl;
+    if (article.publishedAt !== undefined) updateData.published_at = article.publishedAt;
+    
     const [updated] = await db
       .update(articles)
-      .set(article)
+      .set(updateData)
       .where(eq(articles.id, id))
       .returning();
-    return updated || undefined;
+    
+    if (!updated) return undefined;
+    
+    // Map snake_case to camelCase for frontend compatibility
+    return {
+      ...updated,
+      bannerImageUrl: updated.banner_image_url,
+      contentImageUrl: updated.content_image_url,
+      imageUrl: updated.image_url,
+      publishedAt: updated.published_at
+    } as Article;
   }
 
   async deleteArticle(id: number): Promise<boolean> {
