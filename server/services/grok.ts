@@ -54,34 +54,39 @@ PADRÕES OBRIGATÓRIOS DE BLOG PROFISSIONAL:
 - Desperte curiosidade máxima
 - Exemplos: "O Escândalo que Abala o Brasil", "A Verdade que Ninguém Conta"
 
-2. INTRODUÇÃO MAGNÉTICA
-- Máximo 2 parágrafos curtos e impactantes
-- Contextualiza com dados chocantes
-- Prende atenção imediatamente
+2. INTRODUÇÃO MAGNÉTICA E HUMANIZADA
+- 2-3 parágrafos envolventes com narrativa pessoal ou caso real
+- Contextualiza com dados relevantes e histórias humanas
+- Conecta emocionalmente com o leitor desde o início
+- Use storytelling para apresentar o tema
 
-3. ARGUMENTOS BALANCEADOS OBRIGATÓRIOS
-- Sempre apresente PRÓS E CONTRAS
-- Seção específica: "Dois Lados da Questão"
-- Múltiplas perspectivas especialistas
-- Dados contrastantes
+3. ARGUMENTOS BALANCEADOS E APROFUNDADOS
+- Sempre apresente PRÓS E CONTRAS com desenvolvimento completo
+- Seção específica: "Dois Lados da Questão" com 4-5 parágrafos cada lado
+- Múltiplas perspectivas de especialistas com citações diretas
+- Dados contrastantes e análises detalhadas
+- Exemplos concretos para cada argumento
 
-4. ESTRUTURA ORGANIZADA
-- Subtítulos (H2, H3) hierárquicos e claros
-- Parágrafos curtos (2-3 linhas máximo)
-- Listas com bullet points
-- Fácil escaneabilidade
+4. ESTRUTURA HUMANIZADA E ORGANIZADA
+- Subtítulos (H2, H3) criativos e envolventes
+- Parágrafos desenvolvidos (4-6 linhas) com conteúdo substancial
+- Listas detalhadas com explicações completas
+- Fluxo narrativo natural e fácil leitura
+- Cada seção deve ter conteúdo robusto, não superficial
 
-5. CONTEÚDO ORIGINAL E RELEVANTE
-- Dados concretos e estatísticas específicas
-- Exemplos práticos brasileiros
-- Fontes respeitáveis citadas
-- Zero repetições de frases
+5. CONTEÚDO HUMANIZADO E RELEVANTE
+- Dados concretos com contexto e interpretação humana
+- Histórias reais de brasileiros afetados pelo tema
+- Fontes respeitáveis com citações diretas e completas
+- Linguagem natural e envolvente, zero repetições
+- Depoimentos e experiências pessoais quando relevante
 
-6. LINGUAGEM CLARA E OBJETIVA
-- Evite jargões excessivos
-- Frases diretas e impactantes
-- Português brasileiro correto
-- Tom ${style} mas acessível
+6. LINGUAGEM HUMANIZADA E PROFISSIONAL
+- Linguagem conversacional mas respeitosa
+- Frases naturais que soam como conversa inteligente
+- Português brasileiro rico e correto
+- Tom ${style} mas caloroso e acessível
+- Evite robotização, seja genuinamente humano
 
 7. CTAs PARA ENGAJAMENTO MÁXIMO
 - Termine com pergunta controversa
@@ -128,28 +133,42 @@ FORMATO HTML OBRIGATÓRIO:
 <li>Ponto contrário 3 com estatísticas</li>
 </ul>
 
-<h2>Análise Aprofundada</h2>
-<p>Desenvolvimento detalhado do tema com múltiplas perspectivas.</p>
+<h2>Análise Aprofundada: Entendendo o Fenômeno</h2>
+<p>Desenvolvimento detalhado com múltiplas camadas de análise, contexto histórico e comparações internacionais.</p>
+<p>Explicação das causas, consequências e conexões mais amplas do tema.</p>
+<p>Análise crítica das implicações e possíveis cenários futuros.</p>
 
-<h2>Impacto no Brasil</h2>
-<p>Como isso afeta especificamente o contexto brasileiro.</p>
+<h2>O Impacto Real no Dia a Dia dos Brasileiros</h2>
+<p>Como isso afeta concretamente a vida das pessoas, com exemplos específicos de diferentes regiões.</p>
+<p>Depoimentos e histórias reais de pessoas impactadas pela situação.</p>
+<p>Diferenças regionais e socioeconômicas na experiência do fenômeno.</p>
 
-<h2>Especialistas Opinam</h2>
-<p>Citações e análises de especialistas no assunto.</p>
+<h2>Vozes dos Especialistas</h2>
+<p>Citações detalhadas e análises de especialistas renomados no assunto.</p>
+<p>Diferentes escolas de pensamento e abordagens acadêmicas.</p>
+<p>Previsões e recomendações baseadas em evidências.</p>
 
-<h2>Dados e Estatísticas</h2>
-<p>Informações quantitativas relevantes e atualizadas.</p>
+<h2>Por Trás dos Números: Dados que Contam Histórias</h2>
+<p>Informações quantitativas contextualizadas e interpretadas de forma humana.</p>
+<p>Comparações temporais e geográficas que revelam tendências.</p>
+<p>Tradução de estatísticas em impactos reais e compreensíveis.</p>
 
 <h2>Conclusão</h2>
 <p>Síntese final com call-to-action para engajamento.</p>
 
-IMPORTANTE: 
-- Conte uma HISTÓRIA envolvente, não apenas liste fatos
-- Use TRANSIÇÕES suaves entre seções
-- Inclua EXEMPLOS PRÁTICOS e CASOS REAIS
-- Mantenha o leitor ENGAJADO do início ao fim
+IMPORTANTE - CRIAÇÃO HUMANIZADA E PROFISSIONAL: 
+- Conte uma HISTÓRIA envolvente com narrativa fluida, não apenas liste fatos
+- Use TRANSIÇÕES suaves e naturais entre seções
+- Inclua EXEMPLOS PRÁTICOS, CASOS REAIS e TESTEMUNHOS
+- Desenvolva cada seção com CONTEÚDO SUBSTANCIAL (mínimo 3-4 parágrafos por seção)
+- Mantenha o leitor ENGAJADO com linguagem conversacional mas profissional
+- Use DADOS ESPECÍFICOS, estatísticas reais e citações quando possível
+- Evite seções superficiais ou com pouco conteúdo
+- Adicione CONTEXTO HISTÓRICO e COMPARAÇÕES relevantes
+- Inclua VOZES DIFERENTES (especialistas, pessoas comuns, autoridades)
 - NUNCA mencione que o conteúdo foi gerado por IA
-- Escreva como um jornalista experiente escreveria
+- Escreva como um jornalista experiente e renomado escreveria
+- Torne o artigo COMPLETO e APROFUNDADO, não superficial
 
 RETORNE JSON VÁLIDO:
 {
