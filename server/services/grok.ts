@@ -4,7 +4,7 @@ import { generateArticleImage as generateGeminiImage, generateSEOMetaDescription
 
 const openai = new OpenAI({ 
   baseURL: "https://api.x.ai/v1", 
-  apiKey: process.env.XAI_API_KEY || "xai-qJahcbELTK9zcnDGkrNqRrnUseGhkjJ0XZZil7LwRhMx18cteZgh2DgRo6SglMsLwOwSOdqBAgrZkTAj"
+  apiKey: process.env.XAI_API_KEY
 });
 
 export interface ArticleGenerationOptions {

@@ -1,0 +1,48 @@
+Database initialized successfully/index.ts
+9:03:34 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+9:03:40 PM [express] GET /api/stats 304 in 131ms :: {"articlesGenerated":"2","trendingTopicsCount":"…
+9:03:40 PM [express] GET /api/logs 200 in 171ms :: [{"id":4,"message":"Automated task scheduled for …
+9:03:42 PM [express] GET /api/articles 304 in 2177ms :: [{"id":2,"title":"Sustentabilidade: Tendênci…
+9:03:42 PM [express] GET /api/trending-topics 304 in 2168ms :: []
+9:03:44 PM [vite] hmr update /src/pages/blog.tsx, /src/index.css?v=Adntkideoo5ZXhjaNV2mJ
+9:03:49 PM [vite] hmr update /src/pages/blog.tsx, /src/index.css?v=Adntkideoo5ZXhjaNV2mJ (x2)
+9:05:37 PM [express] GET /api/stats 200 in 878ms :: {"articlesGenerated":"2","trendingTopicsCount":"…
+9:05:38 PM [express] GET /api/trending-topics 200 in 2184ms :: []
+9:05:38 PM [express] GET /api/logs 200 in 2182ms :: [{"id":4,"message":"Automated task scheduled for…
+9:05:38 PM [express] GET /api/articles 200 in 2186ms :: [{"id":2,"title":"Sustentabilidade: Tendênci…
+Bearer Token Status: AUSENTE
+Bearer Token Length: 0
+Usando trending topics brasileiros inteligentes - Token não encontrado
+9:05:42 PM [express] POST /api/trending-topics/fetch 200 in 689ms :: {"message":"Trending topics upd…
+9:05:42 PM [express] GET /api/trending-topics 200 in 46ms :: [{"id":1,"hashtag":"#CongressoDaMamata"…
+Error generating article with Grok AI: PermissionDeniedError: 403 "API key is currently blocked: Blocked due to API key leak"
+    at Function.generate (/home/runner/workspace/node_modules/openai/src/core/error.ts:80:14)
+    at OpenAI.makeStatusError (/home/runner/workspace/node_modules/openai/src/client.ts:425:28)
+    at OpenAI.makeRequest (/home/runner/workspace/node_modules/openai/src/client.ts:646:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async generateArticle (/home/runner/workspace/server/services/grok.ts:163:22)
+    at async <anonymous> (/home/runner/workspace/server/routes.ts:277:27) {
+  status: 403,
+  headers: Headers {
+    date: 'Mon, 07 Jul 2025 21:05:52 GMT',
+    'content-type': 'application/json',
+    'transfer-encoding': 'chunked',
+    connection: 'keep-alive',
+    vary: 'origin, access-control-request-method, access-control-request-headers',
+    'access-control-allow-origin': '*',
+    'access-control-expose-headers': '*',
+    'cf-cache-status': 'DYNAMIC',
+    'set-cookie': '__cf_bm=mvWdnIF6tt4tflewmHE0gCtE92fLcnboFV.s2butMe4-1751922352-1.0.1.1-ePFpMIWa76cvz.ZLnhTVMv8hzg4w1jJ8zXxYT5Lc_3y5cJAzyiYJ7eYD9GjckvRbxTOZOusFynT3cMxh49JEHeEi3zjNk.mDYCguB1Le8eo; path=/; expires=Mon, 07-Jul-25 21:35:52 GMT; domain=.x.ai; HttpOnly; Secure; SameSite=None',
+    'strict-transport-security': 'max-age=31536000',
+    server: 'cloudflare',
+    'cf-ray': '95ba4d6ffc921bca-MEM',
+    'content-encoding': 'gzip'
+  },
+  requestID: null,
+  error: 'API key is currently blocked: Blocked due to API key leak',
+  code: undefined,
+  param: undefined,
+  type: undefined

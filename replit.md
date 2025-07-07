@@ -154,6 +154,12 @@ Changelog:
   - Fixed image generation with Gemini AI fallback to generic SVG images
   - Removed all AI mentions from public blog (TrendNews branding)
   - Added comprehensive status management and editorial workflow
+- July 07, 2025. API key management and error handling improvements
+  - Fixed API key management with proper environment variable usage
+  - Added comprehensive error handling for trending topics and article generation
+  - Created .env.example file for secure API key configuration
+  - Implemented fallback system for when external APIs fail
+  - All API keys now properly configured: XAI_API_KEY, TWITTER_BEARER_TOKEN, GEMINI_API_KEY
 
 ## User Preferences
 

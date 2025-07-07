@@ -28,8 +28,8 @@ export default function TrendingTopics() {
     },
     onError: (error) => {
       toast({
-        title: "Erro",
-        description: "Falha ao atualizar trending topics",
+        title: "Erro ao buscar trending topics",
+        description: "Não foi possível encontrar trending topics. Verifique a conexão com a API do Twitter.",
         variant: "destructive",
       });
     },
@@ -48,8 +48,8 @@ export default function TrendingTopics() {
     },
     onError: (error) => {
       toast({
-        title: "Erro",
-        description: "Falha ao gerar artigos selecionados",
+        title: "Erro ao gerar artigos",
+        description: "Falha ao gerar artigos. Verifique se a API key do xAI está configurada corretamente.",
         variant: "destructive",
       });
     },
