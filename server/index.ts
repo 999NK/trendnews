@@ -37,6 +37,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve static images
+app.use('/images', express.static('public/images'));
+
 (async () => {
   // Initialize database with default data
   await initializeDatabase();

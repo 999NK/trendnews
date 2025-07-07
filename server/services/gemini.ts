@@ -4,52 +4,20 @@ export async function generateArticleImage(
     type: 'banner' | 'content' = 'banner'
 ): Promise<string> {
     try {
+        // Import the new image generation service
+        const { generateImageFromDescription } = await import('./imageGeneration.js');
+        
         if (!process.env.GEMINI_API_KEY) {
             console.log("Gemini API key not found, using fallback");
             return generateDefaultPNGImage(hashtag, type);
         }
 
-        const prompt = `Descreva uma imagem profissional para um artigo de blog sobre: ${title}
-Hashtag relacionada: ${hashtag}
-Tipo: ${type === 'banner' ? 'Banner principal' : 'Imagem de conteúdo'}
-
-Estilo: Moderno, jornalístico, profissional
-Tema: Brasil, notícias, atual
-Cores: Tons profissionais (azul, branco, vermelho)
-Formato: ${type === 'banner' ? 'Landscape/horizontal' : 'Quadrado ou retangular'}
-Qualidade: Alta resolução para blog
-
-Descreva em detalhes como seria esta imagem, incluindo elementos visuais, cores, composição e estilo.`;
-
-        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-goog-api-key': process.env.GEMINI_API_KEY || ''
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Gemini API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const imageDescription = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        // Create a comprehensive description for image generation
+        const contextDescription = `Artigo: ${title}. Hashtag: ${hashtag}. Tema brasileiro, notícias atuais, jornalismo profissional.`;
         
-        if (imageDescription) {
-            return generatePNGFromDescription(imageDescription, hashtag, type);
-        } else {
-            return generateDefaultPNGImage(hashtag, type);
-        }
+        return await generateImageFromDescription(contextDescription, hashtag, type);
     } catch (error) {
-        console.log("Gemini image generation failed, will use fallback:", error?.message || error);
+        console.log("Advanced image generation failed, using fallback:", error?.message || error);
         return generateDefaultPNGImage(hashtag, type);
     }
 }

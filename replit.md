@@ -117,6 +117,13 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
+- July 07, 2025. Advanced PNG image generation with Gemini AI implemented
+  - Created local PNG image generation using Canvas and Gemini AI descriptions
+  - Images now generated based on article context with custom themes and colors
+  - Gemini analyzes content to determine optimal visual themes (política, economia, tecnologia, etc.)
+  - Canvas creates professional PNG images with gradients, typography, and branding
+  - Images saved locally and served via Express static route (/images/)
+  - Fallback system maintained for API failures
 - July 07, 2025. Real image URLs implemented for article generation
   - Replaced SVG data URLs with actual JPEG/PNG image URLs from Picsum Photos and Placeholder.com
   - Fixed "None" image display issues with reliable online image sources
