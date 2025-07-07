@@ -34,48 +34,80 @@ export async function generateArticle(options: ArticleGenerationOptions): Promis
     };
 
     const prompt = `
-Você é um jornalista sênior especializado em criar artigos profissionais para o blog de notícias "TrendNews".
+Você é um jornalista sênior do TrendNews especializado em criar posts de blog de alta qualidade.
 
-Crie um artigo EXCEPCIONAL sobre: ${hashtag}
+Crie um artigo profissional sobre: ${hashtag}
 
-REGRAS OBRIGATÓRIAS:
-1. Título atraente e claro (SEM hashtags, SEM símbolos #)
-2. Introdução que prende atenção em 2 parágrafos máximo
-3. Subtítulos claros e organizados hierarquicamente
-4. Parágrafos curtos (máximo 3-4 linhas)
-5. Incluir dados concretos e estatísticas
-6. Linguagem clara, sem jargões excessivos
-7. Finalizar com pergunta para engajamento
+PADRÕES OBRIGATÓRIOS DE BLOG:
+
+1. TÍTULO ATRAENTE
+- Claro, chamativo e que resume o tema
+- NUNCA use hashtags (#) no título
+- Deve despertar curiosidade
+
+2. INTRODUÇÃO IMPACTANTE  
+- Máximo 2 parágrafos curtos
+- Contextualiza o tema
+- Prende a atenção do leitor
+
+3. ESTRUTURA ORGANIZADA
+- Subtítulos (H2, H3) hierárquicos e claros
+- Parágrafos curtos (2-3 linhas máximo)
+- Listas com bullet points quando apropriado
+- Fácil escaneabilidade
+
+4. CONTEÚDO ORIGINAL E RELEVANTE
+- Dados concretos e estatísticas específicas
+- Exemplos práticos brasileiros
+- Fontes respeitáveis quando possível
+- Zero repetições de frases
+
+5. LINGUAGEM CLARA E OBJETIVA
+- Evite jargões excessivos
+- Frases diretas e impactantes
+- Português brasileiro correto
+- Tom ${style} mas acessível
+
+6. CHAMADA PARA AÇÃO
+- Termine com pergunta envolvente
+- Incentive comentários e discussão
+
+7. SEO NATURAL
+- Palavras-chave naturais sobre o tema
+- Conteúdo de ${lengthMap[length]}
 
 Especificações:
 - Idioma: ${languageMap[language]}
+- Foco: Brasil e impacto local
 - Tom: ${style}
-- Extensão: ${lengthMap[length]}
-- Foco: Brasil, mercado brasileiro, impacto local
 
-Estrutura HTML:
-<h1>Título Principal</h1>
-<p>Introdução impactante</p>
+FORMATO HTML OBRIGATÓRIO:
+<h1>Título Principal (sem #)</h1>
+<p>Introdução impactante - parágrafo 1</p>
+<p>Introdução impactante - parágrafo 2</p>
 
-<h2>Subtítulo Principal 1</h2>
-<p>Conteúdo com dados específicos</p>
+<h2>Subtítulo Principal</h2>
+<p>Parágrafo curto com dados específicos.</p>
+<p>Outro parágrafo breve e objetivo.</p>
 
-<h3>Subtópico se necessário</h3>
-<p>Detalhes relevantes</p>
+<h3>Subtópico Específico</h3>
+<ul>
+<li>Ponto relevante 1</li>
+<li>Ponto relevante 2</li>
+<li>Ponto relevante 3</li>
+</ul>
 
-<h2>Subtítulo Principal 2</h2>
-<p>Desenvolvimento do tema</p>
+<h2>Outro Subtítulo Importante</h2>
+<p>Desenvolvimento com exemplos brasileiros.</p>
 
-<h2>Conclusão/Perspectivas</h2>
-<p>Insights e pergunta final</p>
+<h2>Perspectivas e Conclusão</h2>
+<p>Insights finais com pergunta para engajamento.</p>
 
-IMPORTANTE: Use dados reais quando possível, cite fontes respeitáveis, evite repetições.
-
-Retorne JSON:
+RETORNE JSON VÁLIDO:
 {
-  "title": "título limpo sem hashtags",
-  "content": "artigo completo em HTML",
-  "excerpt": "resumo atraente de 150-180 caracteres"
+  "title": "título profissional sem hashtags",
+  "content": "artigo completo em HTML seguindo estrutura",
+  "excerpt": "resumo atraente de 150-180 caracteres para despertar interesse"
 }
 `;
 
