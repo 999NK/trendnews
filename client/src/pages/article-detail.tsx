@@ -19,7 +19,7 @@ function processArticleContent(content: string, contentImageUrl?: string): strin
     // Insert image after the 2nd paragraph (index 1)
     const imageHtml = `
       <div class="my-8 text-center">
-        <img src="${contentImageUrl}" alt="Imagem do artigo" class="w-full max-w-2xl mx-auto h-64 object-cover rounded-lg shadow-lg" />
+        <img src="${contentImageUrl}" alt="Imagem do artigo" class="w-full max-w-2xl mx-auto h-64 object-cover rounded-lg shadow-lg" onerror="console.log('Content image failed to load:', this.src)" />
       </div>
     `;
     
@@ -136,13 +136,30 @@ export default function ArticleDetail() {
             </p>
 
             {/* Banner Image */}
-            {(article.bannerImageUrl || article.imageUrl) && (
+            {(article.bannerImageUrl || article.banner_image_url || article.imageUrl || article.image_url) && (
               <div className="mb-8">
                 <img
-                  src={article.bannerImageUrl || article.imageUrl}
+                  src={article.bannerImageUrl || article.banner_image_url || article.imageUrl || article.image_url}
                   alt={article.title}
                   className="w-full h-64 object-cover rounded-lg shadow-lg"
+                  onError={(e) => {
+                    console.log('Banner image failed to load:', e.target.src);
+                    console.log('Article data:', article);
+                  }}
                 />
+              </div>
+            )}
+            
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mb-4 p-2 bg-gray-100 text-xs">
+                <strong>Debug - Image URLs:</strong><br />
+                bannerImageUrl: {article.bannerImageUrl ? 'Present' : 'None'}<br />
+                banner_image_url: {article.banner_image_url ? 'Present' : 'None'}<br />
+                contentImageUrl: {article.contentImageUrl ? 'Present' : 'None'}<br />
+                content_image_url: {article.content_image_url ? 'Present' : 'None'}<br />
+                imageUrl: {article.imageUrl ? 'Present' : 'None'}<br />
+                image_url: {article.image_url ? 'Present' : 'None'}
               </div>
             )}
             
@@ -174,7 +191,7 @@ export default function ArticleDetail() {
           <div 
             className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-red-600 prose-strong:text-gray-900"
             dangerouslySetInnerHTML={{ 
-              __html: processArticleContent(article.content, article.contentImageUrl)
+              __html: processArticleContent(article.content, article.contentImageUrl || article.content_image_url)
             }}
           />
 
