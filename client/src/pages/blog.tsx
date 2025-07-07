@@ -151,9 +151,13 @@ export default function Blog() {
                     <div className="md:w-1/2">
                       <div className="h-64 md:h-full bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center relative overflow-hidden">
                         <img 
-                          src={generateGenericImage(featuredArticle.hashtag)} 
+                          src={featuredArticle.imageUrl || featuredArticle.bannerImageUrl || generateGenericImage(featuredArticle.hashtag)} 
                           alt={featuredArticle.title}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            console.log('Featured image failed to load:', e.currentTarget.src);
+                            e.currentTarget.src = generateGenericImage(featuredArticle.hashtag);
+                          }}
                         />
                       </div>
                     </div>
@@ -207,9 +211,13 @@ export default function Blog() {
                       <Link href={`/noticia/${article.id}`} className="block">
                         <div className="h-48 bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center relative overflow-hidden">
                           <img 
-                            src={generateGenericImage(article.hashtag)} 
+                            src={article.imageUrl || article.bannerImageUrl || generateGenericImage(article.hashtag)} 
                             alt={article.title}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.log('Article image failed to load:', e.currentTarget.src);
+                              e.currentTarget.src = generateGenericImage(article.hashtag);
+                            }}
                           />
                         </div>
                         <CardContent className="p-6">
