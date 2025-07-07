@@ -6,8 +6,14 @@ import {
   SystemLog,
   InsertSystemLog,
   Settings,
-  InsertSettings
+  InsertSettings,
+  articles,
+  trendingTopics,
+  systemLogs,
+  settings
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Articles
@@ -383,4 +389,188 @@ O ecossistema FinTech brasileiro continua em expansão acelerada, revolucionando
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  async getArticles(): Promise<Article[]> {
+    return await db.select().from(articles).orderBy(desc(articles.createdAt));
+  }
+
+  async getArticle(id: number): Promise<Article | undefined> {
+    const [article] = await db.select().from(articles).where(eq(articles.id, id));
+    return article || undefined;
+  }
+
+  async createArticle(article: InsertArticle): Promise<Article> {
+    const [newArticle] = await db
+      .insert(articles)
+      .values({
+        ...article,
+        status: article.status || "published",
+        published: article.published || false,
+        imageUrl: article.imageUrl || null,
+        publishedAt: article.publishedAt || null,
+      })
+      .returning();
+    return newArticle;
+  }
+
+  async updateArticle(id: number, article: Partial<InsertArticle>): Promise<Article | undefined> {
+    const [updated] = await db
+      .update(articles)
+      .set(article)
+      .where(eq(articles.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteArticle(id: number): Promise<boolean> {
+    const result = await db.delete(articles).where(eq(articles.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async publishArticle(id: number): Promise<Article | undefined> {
+    const [updated] = await db
+      .update(articles)
+      .set({
+        published: true,
+        publishedAt: new Date(),
+        status: "published",
+      })
+      .where(eq(articles.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async unpublishArticle(id: number): Promise<Article | undefined> {
+    const [updated] = await db
+      .update(articles)
+      .set({
+        published: false,
+        publishedAt: null,
+        status: "draft",
+      })
+      .where(eq(articles.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async getPublishedArticles(): Promise<Article[]> {
+    return await db
+      .select()
+      .from(articles)
+      .where(eq(articles.published, true))
+      .orderBy(desc(articles.publishedAt));
+  }
+
+  async getTrendingTopics(): Promise<TrendingTopic[]> {
+    return await db.select().from(trendingTopics).orderBy(trendingTopics.rank);
+  }
+
+  async getTrendingTopic(id: number): Promise<TrendingTopic | undefined> {
+    const [topic] = await db.select().from(trendingTopics).where(eq(trendingTopics.id, id));
+    return topic || undefined;
+  }
+
+  async createTrendingTopic(topic: InsertTrendingTopic): Promise<TrendingTopic> {
+    const [newTopic] = await db
+      .insert(trendingTopics)
+      .values({
+        ...topic,
+        status: topic.status || "queued",
+      })
+      .returning();
+    return newTopic;
+  }
+
+  async updateTrendingTopic(id: number, topic: Partial<InsertTrendingTopic>): Promise<TrendingTopic | undefined> {
+    const [updated] = await db
+      .update(trendingTopics)
+      .set(topic)
+      .where(eq(trendingTopics.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async clearTrendingTopics(): Promise<void> {
+    await db.delete(trendingTopics);
+  }
+
+  async getSystemLogs(limit = 50): Promise<SystemLog[]> {
+    return await db
+      .select()
+      .from(systemLogs)
+      .orderBy(desc(systemLogs.createdAt))
+      .limit(limit);
+  }
+
+  async createSystemLog(log: InsertSystemLog): Promise<SystemLog> {
+    const [newLog] = await db
+      .insert(systemLogs)
+      .values({
+        ...log,
+        details: log.details || null,
+      })
+      .returning();
+    return newLog;
+  }
+
+  async getSettings(): Promise<Settings[]> {
+    return await db.select().from(settings);
+  }
+
+  async getSetting(key: string): Promise<Settings | undefined> {
+    const [setting] = await db.select().from(settings).where(eq(settings.key, key));
+    return setting || undefined;
+  }
+
+  async setSetting(key: string, value: string): Promise<Settings> {
+    const existing = await this.getSetting(key);
+    if (existing) {
+      const [updated] = await db
+        .update(settings)
+        .set({ value })
+        .where(eq(settings.key, key))
+        .returning();
+      return updated;
+    } else {
+      const [newSetting] = await db
+        .insert(settings)
+        .values({ key, value })
+        .returning();
+      return newSetting;
+    }
+  }
+
+  async getStats(): Promise<{
+    articlesGenerated: number;
+    trendingTopicsCount: number;
+    apiCalls: number;
+    successRate: number;
+  }> {
+    const [articleStats] = await db
+      .select({
+        total: sql<number>`count(*)`,
+        published: sql<number>`count(*) filter (where published = true)`,
+      })
+      .from(articles);
+
+    const [topicCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(trendingTopics);
+
+    const [apiCallCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(systemLogs)
+      .where(sql`type = 'info' AND message LIKE '%API%'`);
+
+    const successRate = articleStats.total > 0 ? (articleStats.published / articleStats.total) * 100 : 98.5;
+
+    return {
+      articlesGenerated: articleStats.published,
+      trendingTopicsCount: topicCount.count,
+      apiCalls: apiCallCount.count,
+      successRate: Math.round(successRate * 10) / 10,
+    };
+  }
+}
+
+export const storage = new DatabaseStorage();
