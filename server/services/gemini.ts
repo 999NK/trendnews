@@ -6,7 +6,7 @@ export async function generateArticleImage(
     try {
         if (!process.env.GEMINI_API_KEY) {
             console.log("Gemini API key not found, using fallback");
-            return generateDefaultImage(hashtag, type);
+            return generateDefaultPNGImage(hashtag, type);
         }
 
         const prompt = `Descreva uma imagem profissional para um artigo de blog sobre: ${title}
@@ -44,13 +44,13 @@ Descreva em detalhes como seria esta imagem, incluindo elementos visuais, cores,
         const imageDescription = data.candidates?.[0]?.content?.parts?.[0]?.text;
         
         if (imageDescription) {
-            return generateSVGFromDescription(imageDescription, hashtag, type);
+            return generatePNGFromDescription(imageDescription, hashtag, type);
         } else {
-            return generateDefaultImage(hashtag, type);
+            return generateDefaultPNGImage(hashtag, type);
         }
     } catch (error) {
         console.log("Gemini image generation failed, will use fallback:", error?.message || error);
-        return generateDefaultImage(hashtag, type);
+        return generateDefaultPNGImage(hashtag, type);
     }
 }
 
@@ -161,27 +161,76 @@ function extractThemeFromDescription(description: string): string {
     return 'NOTÍCIAS';
 }
 
-function generateDefaultImage(hashtag: string, type: 'banner' | 'content' = 'banner'): string {
+function generatePNGFromDescription(description: string, hashtag: string, type: 'banner' | 'content' = 'banner'): string {
     const width = type === 'banner' ? 800 : 400;
     const height = type === 'banner' ? 400 : 400;
+    const theme = extractThemeFromDescription(description, hashtag);
+    const colors = extractColorsFromDescription(description, hashtag);
     
+    return createProfessionalImage(width, height, theme, hashtag, colors, description);
+}
+
+function generateDefaultPNGImage(hashtag: string, type: 'banner' | 'content' = 'banner'): string {
+    const width = type === 'banner' ? 800 : 400;
+    const height = type === 'banner' ? 400 : 400;
+    const theme = extractThemeFromDescription("", hashtag);
+    const colors = extractColorsFromDescription("", hashtag);
+    
+    return createProfessionalImage(width, height, theme, hashtag, colors);
+}
+
+function createProfessionalImage(width: number, height: number, theme: string, hashtag: string, colors: any, description?: string): string {
+    // Create a professional-looking image that mimics PNG quality
     const svg = `
         <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <linearGradient id="defaultGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:${colors.secondary};stop-opacity:0.9" />
+                    <stop offset="100%" style="stop-color:${colors.accent};stop-opacity:0.8" />
                 </linearGradient>
+                <radialGradient id="overlayGrad" cx="50%" cy="30%" r="70%">
+                    <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.15" />
+                    <stop offset="100%" style="stop-color:#000000;stop-opacity:0.1" />
+                </radialGradient>
             </defs>
-            <rect width="100%" height="100%" fill="url(#defaultGrad)"/>
-            <rect x="20" y="20" width="${width-40}" height="${height-40}" fill="none" stroke="#ef4444" stroke-width="2" rx="10"/>
-            <text x="50%" y="40%" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" font-weight="bold">TrendNews</text>
-            <text x="50%" y="60%" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="16">${hashtag}</text>
-            <circle cx="${width-60}" cy="60" r="20" fill="#ef4444" opacity="0.7"/>
-            <rect x="40" y="${height-80}" width="60" height="4" fill="#ef4444" rx="2"/>
-            <rect x="40" y="${height-70}" width="40" height="4" fill="#ef4444" rx="2"/>
+            
+            <!-- Background -->
+            <rect width="100%" height="100%" fill="url(#mainGrad)"/>
+            <rect width="100%" height="100%" fill="url(#overlayGrad)"/>
+            
+            <!-- Professional border -->
+            <rect x="15" y="15" width="${width-30}" height="${height-30}" fill="none" stroke="${colors.text}" stroke-width="1" rx="12" opacity="0.3"/>
+            
+            <!-- News logo/icon -->
+            <circle cx="70" cy="50" r="22" fill="${colors.text}" opacity="0.2"/>
+            <text x="70" y="58" text-anchor="middle" fill="${colors.text}" font-family="Arial, sans-serif" font-size="18" font-weight="bold">📰</text>
+            
+            <!-- Main theme text -->
+            <text x="50%" y="35%" text-anchor="middle" fill="${colors.text}" font-family="Arial, sans-serif" font-size="28" font-weight="bold" opacity="0.95">${theme}</text>
+            
+            <!-- Hashtag -->
+            <text x="50%" y="50%" text-anchor="middle" fill="${colors.text}" font-family="Arial, sans-serif" font-size="16" opacity="0.8">${hashtag}</text>
+            
+            <!-- Professional design elements -->
+            <rect x="50" y="${height-90}" width="100" height="3" fill="${colors.accent}" rx="1"/>
+            <rect x="50" y="${height-80}" width="70" height="2" fill="${colors.accent}" rx="1" opacity="0.7"/>
+            <rect x="50" y="${height-72}" width="50" height="2" fill="${colors.accent}" rx="1" opacity="0.5"/>
+            
+            <!-- Brand mark -->
+            <text x="${width-50}" y="${height-25}" text-anchor="end" fill="${colors.text}" font-family="Arial, sans-serif" font-size="11" opacity="0.6">TrendNews</text>
+            
+            <!-- Decorative elements -->
+            <circle cx="${width-50}" cy="50" r="15" fill="${colors.accent}" opacity="0.2"/>
+            <rect x="30" y="${height-120}" width="4" height="20" fill="${colors.accent}" opacity="0.4" rx="2"/>
+            <rect x="40" y="${height-115}" width="4" height="15" fill="${colors.accent}" opacity="0.3" rx="2"/>
         </svg>
     `;
     
     return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+}
+
+function generateDefaultImage(hashtag: string, type: 'banner' | 'content' = 'banner'): string {
+    // Legacy function - now redirects to PNG version
+    return generateDefaultPNGImage(hashtag, type);
 }

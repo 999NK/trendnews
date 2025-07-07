@@ -399,12 +399,30 @@ O ecossistema FinTech brasileiro continua em expansão acelerada, revolucionando
 
 export class DatabaseStorage implements IStorage {
   async getArticles(): Promise<Article[]> {
-    return await db.select().from(articles).orderBy(desc(articles.createdAt));
+    const rawArticles = await db.select().from(articles).orderBy(desc(articles.createdAt));
+    
+    // Map snake_case to camelCase for frontend compatibility
+    return rawArticles.map(article => ({
+      ...article,
+      bannerImageUrl: article.banner_image_url,
+      contentImageUrl: article.content_image_url,
+      imageUrl: article.image_url,
+      publishedAt: article.published_at
+    })) as Article[];
   }
 
   async getArticle(id: number): Promise<Article | undefined> {
     const [article] = await db.select().from(articles).where(eq(articles.id, id));
-    return article || undefined;
+    if (!article) return undefined;
+    
+    // Map snake_case to camelCase for frontend compatibility
+    return {
+      ...article,
+      bannerImageUrl: article.banner_image_url,
+      contentImageUrl: article.content_image_url,
+      imageUrl: article.image_url,
+      publishedAt: article.published_at
+    } as Article;
   }
 
   async createArticle(article: InsertArticle): Promise<Article> {
@@ -462,11 +480,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPublishedArticles(): Promise<Article[]> {
-    return await db
+    const rawArticles = await db
       .select()
       .from(articles)
       .where(eq(articles.published, true))
       .orderBy(desc(articles.publishedAt));
+    
+    // Map snake_case to camelCase for frontend compatibility
+    return rawArticles.map(article => ({
+      ...article,
+      bannerImageUrl: article.banner_image_url,
+      contentImageUrl: article.content_image_url,
+      imageUrl: article.image_url,
+      publishedAt: article.published_at
+    })) as Article[];
   }
 
   async getTrendingTopics(): Promise<TrendingTopic[]> {
