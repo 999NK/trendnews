@@ -8,6 +8,31 @@ import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+// Function to insert content image between 2nd and 3rd paragraphs
+function processArticleContent(content: string, contentImageUrl?: string): string {
+  if (!contentImageUrl) return content;
+  
+  // Split content by paragraphs (p tags)
+  const paragraphs = content.split('</p>');
+  
+  if (paragraphs.length >= 3) {
+    // Insert image after the 2nd paragraph (index 1)
+    const imageHtml = `
+      <div class="my-8 text-center">
+        <img src="${contentImageUrl}" alt="Imagem do artigo" class="w-full max-w-2xl mx-auto h-64 object-cover rounded-lg shadow-lg" />
+      </div>
+    `;
+    
+    // Reconstruct content with image inserted
+    const beforeImage = paragraphs.slice(0, 2).join('</p>') + '</p>';
+    const afterImage = paragraphs.slice(2).join('</p>');
+    
+    return beforeImage + imageHtml + afterImage;
+  }
+  
+  return content;
+}
+
 export default function ArticleDetail() {
   const [location] = useLocation();
   const articleId = location.split('/')[2]; // Extrai ID da URL /articles/:id
@@ -109,6 +134,17 @@ export default function ArticleDetail() {
             <p className="text-xl text-gray-600 mb-6 leading-relaxed">
               {article.excerpt}
             </p>
+
+            {/* Banner Image */}
+            {(article.bannerImageUrl || article.imageUrl) && (
+              <div className="mb-8">
+                <img
+                  src={article.bannerImageUrl || article.imageUrl}
+                  alt={article.title}
+                  className="w-full h-64 object-cover rounded-lg shadow-lg"
+                />
+              </div>
+            )}
             
             <div className="flex items-center justify-between border-t border-b border-gray-200 py-4">
               <div className="flex items-center space-x-6 text-sm text-gray-500">
@@ -137,7 +173,9 @@ export default function ArticleDetail() {
           {/* Conteúdo do Artigo */}
           <div 
             className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-red-600 prose-strong:text-gray-900"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={{ 
+              __html: processArticleContent(article.content, article.contentImageUrl)
+            }}
           />
 
           {/* Footer do Artigo */}

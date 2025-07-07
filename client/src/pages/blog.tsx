@@ -9,6 +9,29 @@ import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+// Generate generic SVG for blog previews
+function generateGenericImage(hashtag: string): string {
+  const svg = `
+    <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.1" />
+          <stop offset="100%" style="stop-color:#dc2626;stop-opacity:0.2" />
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grad)"/>
+      <rect x="20" y="20" width="360" height="260" fill="none" stroke="#dc2626" stroke-width="2" rx="10"/>
+      <text x="50%" y="40%" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-size="20" font-weight="bold">TrendNews</text>
+      <text x="50%" y="60%" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="14">${hashtag}</text>
+      <circle cx="340" cy="60" r="15" fill="#dc2626" opacity="0.7"/>
+      <rect x="40" y="220" width="50" height="3" fill="#dc2626" rx="1"/>
+      <rect x="40" y="230" width="30" height="3" fill="#dc2626" rx="1"/>
+    </svg>
+  `;
+  
+  return `data:image/svg+xml;base64,${btoa(svg)}`;
+}
+
 // Função para criar slug da URL
 function createSlug(title: string): string {
   return title
@@ -127,22 +150,11 @@ export default function Blog() {
                   <div className="md:flex">
                     <div className="md:w-1/2">
                       <div className="h-64 md:h-full bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center relative overflow-hidden">
-                        {featuredArticle.imageUrl ? (
-                          <img 
-                            src={featuredArticle.imageUrl} 
-                            alt={featuredArticle.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="text-center p-8">
-                            <div className="w-16 h-16 bg-red-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-                              <span className="text-2xl">📰</span>
-                            </div>
-                            <Badge variant="secondary" className="mb-2">
-                              {featuredArticle.hashtag}
-                            </Badge>
-                          </div>
-                        )}
+                        <img 
+                          src={generateGenericImage(featuredArticle.hashtag)} 
+                          alt={featuredArticle.title}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     </div>
                     <div className="md:w-1/2 p-8">
@@ -194,22 +206,11 @@ export default function Blog() {
                     <Card key={article.id} className="overflow-hidden bg-card hover:shadow-lg transition-shadow group cursor-pointer">
                       <Link href={`/noticia/${article.id}`} className="block">
                         <div className="h-48 bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center relative overflow-hidden">
-                          {article.imageUrl ? (
-                            <img 
-                              src={article.imageUrl} 
-                              alt={article.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="text-center">
-                              <div className="w-12 h-12 bg-red-100 rounded-full mx-auto mb-3 flex items-center justify-center">
-                                <span className="text-lg">📰</span>
-                              </div>
-                              <Badge variant="secondary" className="text-xs">
-                                {article.hashtag}
-                              </Badge>
-                            </div>
-                          )}
+                          <img 
+                            src={generateGenericImage(article.hashtag)} 
+                            alt={article.title}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <CardContent className="p-6">
                           <h3 className="font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">

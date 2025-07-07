@@ -225,6 +225,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         hashtag,
         status: 'draft',
         imageUrl: article.imageUrl,
+        bannerImageUrl: article.bannerImageUrl,
+        contentImageUrl: article.contentImageUrl,
         metaDescription: article.metaDescription,
         seoKeywords: article.seoKeywords
       });
@@ -286,12 +288,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             content: article.content,
             excerpt: article.excerpt,
             hashtag: hashtag,
-            status: 'published',
+            status: 'draft', // Changed to draft for manual approval
             imageUrl: article.imageUrl,
+            bannerImageUrl: article.bannerImageUrl,
+            contentImageUrl: article.contentImageUrl,
             metaDescription: article.metaDescription,
             seoKeywords: article.seoKeywords,
-            published: true,
-            publishedAt: new Date(),
+            published: false,
+            publishedAt: null,
           });
 
           results.push(createdArticle);

@@ -1,17 +1,20 @@
 import OpenAI from "openai";
 import { generateArticleImage } from "./imageGenerator";
-import { generateArticleImage as generateGeminiImage, generateSEOMetaDescription } from './gemini';
+import {
+  generateArticleImage as generateGeminiImage,
+  generateSEOMetaDescription,
+} from "./gemini";
 
-const openai = new OpenAI({ 
-  baseURL: "https://api.x.ai/v1", 
-  apiKey: process.env.XAI_API_KEY
+const openai = new OpenAI({
+  baseURL: "https://api.x.ai/v1",
+  apiKey: process.env.XAI_API_KEY,
 });
 
 export interface ArticleGenerationOptions {
   hashtag: string;
-  length: 'short' | 'medium' | 'long';
-  style: 'informative' | 'casual' | 'formal' | 'engaging';
-  language: 'pt' | 'en' | 'es';
+  length: "short" | "medium" | "long";
+  style: "informative" | "casual" | "formal" | "engaging";
+  language: "pt" | "en" | "es";
 }
 
 export interface ArticleGenerationResult {
@@ -19,233 +22,215 @@ export interface ArticleGenerationResult {
   content: string;
   excerpt: string;
   imageUrl?: string;
+  bannerImageUrl?: string;
+  contentImageUrl?: string;
   metaDescription?: string;
   seoKeywords?: string;
-}
-
-export async function generateArticle(options: ArticleGenerationOptions): Promise<ArticleGenerationResult> {
-  try {
-    const { hashtag, length, style, language } = options;
-    
-    const lengthMap = {
-      short: "600-900 palavras",
-      medium: "1200-1800 palavras", 
-      long: "2500-3500 palavras"
-    };
-
-    const languageMap = {
-      pt: "português brasileiro",
-      en: "inglês",
-      es: "espanhol"
-    };
-
-    const prompt = `
-Você é um jornalista investigativo sênior do TrendNews, especializado em criar artigos de blog profissionais, detalhados e envolventes.
-
-Crie um artigo COMPLETO e PROFISSIONAL sobre: ${hashtag}
-
-PADRÕES OBRIGATÓRIOS DE BLOG PROFISSIONAL:
-
-1. TÍTULO ULTRA-ATRAENTE E PROFISSIONAL
-- Chamativo mas jornalístico (evite clickbait extremo)
-- Sem hashtags ou símbolos especiais
-- Foque em benefícios, curiosidades ou impacto
-- NUNCA use hashtags (#) no título
-- Desperte curiosidade máxima
-- Exemplos: "O Escândalo que Abala o Brasil", "A Verdade que Ninguém Conta"
-
-2. INTRODUÇÃO MAGNÉTICA E HUMANIZADA
-- 2-3 parágrafos envolventes com narrativa pessoal ou caso real
-- Contextualiza com dados relevantes e histórias humanas
-- Conecta emocionalmente com o leitor desde o início
-- Use storytelling para apresentar o tema
-
-3. ARGUMENTOS BALANCEADOS E APROFUNDADOS
-- Sempre apresente PRÓS E CONTRAS com desenvolvimento completo
-- Seção específica: "Dois Lados da Questão" com 4-5 parágrafos cada lado
-- Múltiplas perspectivas de especialistas com citações diretas
-- Dados contrastantes e análises detalhadas
-- Exemplos concretos para cada argumento
-
-4. ESTRUTURA HUMANIZADA E ORGANIZADA
-- Subtítulos (H2, H3) criativos e envolventes
-- Parágrafos desenvolvidos (4-6 linhas) com conteúdo substancial
-- Listas detalhadas com explicações completas
-- Fluxo narrativo natural e fácil leitura
-- Cada seção deve ter conteúdo robusto, não superficial
-
-5. CONTEÚDO HUMANIZADO E RELEVANTE
-- Dados concretos com contexto e interpretação humana
-- Histórias reais de brasileiros afetados pelo tema
-- Fontes respeitáveis com citações diretas e completas
-- Linguagem natural e envolvente, zero repetições
-- Depoimentos e experiências pessoais quando relevante
-
-6. LINGUAGEM HUMANIZADA E PROFISSIONAL
-- Linguagem conversacional mas respeitosa
-- Frases naturais que soam como conversa inteligente
-- Português brasileiro rico e correto
-- Tom ${style} mas caloroso e acessível
-- Evite robotização, seja genuinamente humano
-
-7. CTAs PARA ENGAJAMENTO MÁXIMO
-- Termine com pergunta controversa
-- Incentive compartilhamento
-- Chame para debate
-- Exemplo: "E você, concorda com essa decisão? Compartilhe sua opinião!"
-
-8. SEO ULTRA-OTIMIZADO
-- Inclua MUITAS palavras-chave relacionadas
-- Variações do tema principal
-- Termos trending brasileiros
-- Conteúdo de ${lengthMap[length]}
-
-9. ELEMENTOS VISUAIS PREPARADOS
-- Inclua sugestões de imagens
-- Pontos para gráficos/infográficos
-- Dados que merecem visualização
-
-Especificações:
-- Idioma: ${languageMap[language]}
-- Foco: Brasil e impacto local
-- Tom: ${style}
-
-FORMATO HTML OBRIGATÓRIO:
-<h1>Título Ultra-Atraente (sem #)</h1>
-<p>Introdução magnética - parágrafo 1</p>
-<p>Introdução magnética - parágrafo 2</p>
-
-<h2>Os Fatos Que Você Precisa Saber</h2>
-<p>Dados específicos e impactantes.</p>
-
-<h2>Dois Lados da Questão</h2>
-<h3>Argumentos Favoráveis</h3>
-<ul>
-<li>Ponto favorável 1 com dados</li>
-<li>Ponto favorável 2 com evidências</li>
-<li>Ponto favorável 3 com estatísticas</li>
-</ul>
-
-<h3>Argumentos Contrários</h3>
-<ul>
-<li>Ponto contrário 1 com dados</li>
-<li>Ponto contrário 2 com evidências</li>
-<li>Ponto contrário 3 com estatísticas</li>
-</ul>
-
-<h2>Análise Aprofundada: Entendendo o Fenômeno</h2>
-<p>Desenvolvimento detalhado com múltiplas camadas de análise, contexto histórico e comparações internacionais.</p>
-<p>Explicação das causas, consequências e conexões mais amplas do tema.</p>
-<p>Análise crítica das implicações e possíveis cenários futuros.</p>
-
-<h2>O Impacto Real no Dia a Dia dos Brasileiros</h2>
-<p>Como isso afeta concretamente a vida das pessoas, com exemplos específicos de diferentes regiões.</p>
-<p>Depoimentos e histórias reais de pessoas impactadas pela situação.</p>
-<p>Diferenças regionais e socioeconômicas na experiência do fenômeno.</p>
-
-<h2>Vozes dos Especialistas</h2>
-<p>Citações detalhadas e análises de especialistas renomados no assunto.</p>
-<p>Diferentes escolas de pensamento e abordagens acadêmicas.</p>
-<p>Previsões e recomendações baseadas em evidências.</p>
-
-<h2>Por Trás dos Números: Dados que Contam Histórias</h2>
-<p>Informações quantitativas contextualizadas e interpretadas de forma humana.</p>
-<p>Comparações temporais e geográficas que revelam tendências.</p>
-<p>Tradução de estatísticas em impactos reais e compreensíveis.</p>
-
-<h2>Conclusão</h2>
-<p>Síntese final com call-to-action para engajamento.</p>
-
-IMPORTANTE - CRIAÇÃO HUMANIZADA E PROFISSIONAL: 
-- Conte uma HISTÓRIA envolvente com narrativa fluida, não apenas liste fatos
-- Use TRANSIÇÕES suaves e naturais entre seções
-- Inclua EXEMPLOS PRÁTICOS, CASOS REAIS e TESTEMUNHOS
-- Desenvolva cada seção com CONTEÚDO SUBSTANCIAL (mínimo 3-4 parágrafos por seção)
-- Mantenha o leitor ENGAJADO com linguagem conversacional mas profissional
-- Use DADOS ESPECÍFICOS, estatísticas reais e citações quando possível
-- Evite seções superficiais ou com pouco conteúdo
-- Adicione CONTEXTO HISTÓRICO e COMPARAÇÕES relevantes
-- Inclua VOZES DIFERENTES (especialistas, pessoas comuns, autoridades)
-- NUNCA mencione que o conteúdo foi gerado por IA
-- Escreva como um jornalista experiente e renomado escreveria
-- Torne o artigo COMPLETO e APROFUNDADO, não superficial
-
-RETORNE JSON VÁLIDO:
-{
-  "title": "título ultra-atraente sem hashtags",
-  "content": "artigo completo em HTML seguindo estrutura",
-  "excerpt": "resumo atraente de 150-180 caracteres para despertar interesse",
-  "seoKeywords": "lista de palavras-chave separadas por vírgulas, mínimo 15 termos"
-}
-`;
-
-    const response = await openai.chat.completions.create({
-      model: "grok-2-1212",
-      messages: [
-        {
-          role: "system",
-          content: "Você é um jornalista sênior do TrendNews, especializado em criar conteúdo de altíssima qualidade seguindo padrões jornalísticos profissionais. Sempre responda em formato JSON válido."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 4000,
-    });
-
-    const result = JSON.parse(response.choices[0].message.content || "{}");
-    
-    if (!result.title || !result.content || !result.excerpt) {
-      throw new Error("Invalid response format from Grok AI");
-    }
-
-    // Generate image with Gemini AI or fallback to generic image
-    let imageUrl = await generateGeminiImage(result.title, options.hashtag);
-    if (!imageUrl) {
-      imageUrl = generateArticleImage(result.title, options.hashtag);
-    }
-    
-    // Generate SEO meta description
-    const metaDescription = await generateSEOMetaDescription(result.title, result.content);
-
-    return {
-      title: result.title,
-      content: result.content,
-      excerpt: result.excerpt,
-      imageUrl: imageUrl || undefined,
-      metaDescription: metaDescription || undefined,
-      seoKeywords: result.seoKeywords || undefined,
-    };
-
-  } catch (error) {
-    console.error("Error generating article with Grok AI:", error);
-    throw new Error(`Failed to generate article: ${error instanceof Error ? error.message : "Unknown error"}`);
-  }
 }
 
 export async function researchTopic(hashtag: string): Promise<string> {
   try {
     const response = await openai.chat.completions.create({
-      model: "grok-2-1212",
+      model: "grok-3", // Usa Grok 3 para acesso a posts do X
       messages: [
         {
           role: "system",
-          content: "You are a research assistant. Provide comprehensive background information about trending topics."
+          content:
+            "Você é um assistente de pesquisa com acesso a posts públicos do X em tempo real. Forneça um resumo detalhado e conciso sobre hashtags em alta, focando no contexto brasileiro.",
         },
         {
           role: "user",
-          content: `Research and provide comprehensive information about the trending topic "${hashtag}". Include recent developments, key players, and relevant context.`
-        }
+          content: `Pesquise a hashtag "${hashtag}" no X no Brasil e forneça um resumo detalhado (máximo 500 palavras) com:
+          - **Contexto**: Por que a hashtag está em alta? Qual evento, notícia ou debate a impulsionou?
+          - **Temas Principais**: Quais subtemas ou questões estão sendo discutidos?
+          - **Sentimento Geral**: Positivo, negativo ou neutro? Qual é o tom predominante?
+          - **Exemplos de Posts**: Resuma 2-3 posts relevantes (sem citar nomes reais de usuários).
+          - **Impacto Cultural/Social**: Como a hashtag afeta o Brasil (ex.: regiões, grupos sociais)?
+          - **Dados Quantitativos**: Número estimado de posts, alcance ou menções, se disponível.
+          - **Fontes Relevantes**: Mencione fontes confiáveis (ex.: mídia, relatórios) relacionadas ao tema, se aplicável.`,
+        },
       ],
-      max_tokens: 1000,
+      max_tokens: 1000, // Limite para um resumo conciso
     });
 
     return response.choices[0].message.content || "";
-
   } catch (error) {
-    console.error("Error researching topic with Grok AI:", error);
-    throw new Error(`Failed to research topic: ${error instanceof Error ? error.message : "Unknown error"}`);
+    console.error("Erro ao pesquisar tópico com Grok 3:", error);
+    throw new Error(
+      `Falha na pesquisa do tópico: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+    );
+  }
+}
+
+export async function generateArticle(
+  options: ArticleGenerationOptions,
+): Promise<ArticleGenerationResult> {
+  try {
+    const { hashtag, length, style, language } = options;
+
+    const lengthMap = {
+      short: "600-900 palavras",
+      medium: "1200-1800 palavras",
+      long: "2500-3500 palavras",
+    };
+
+    const languageMap = {
+      pt: "português brasileiro",
+      en: "inglês",
+      es: "espanhol",
+    };
+
+    // Obter contexto detalhado da hashtag no X
+    const hashtagContext = await researchTopic(hashtag);
+
+    const prompt = `
+    Você é um jornalista investigativo sênior do TrendNews, especializado em criar notícias profissionais, profundamente humanizadas, envolventes e narrativas, no estilo de "A Jornada de Ozzy Osbourne: Do Pioneirismo no Heavy Metal ao Ícone Cultural no Brasil". Sua missão é produzir uma notícia cativante que reflita as discussões reais da hashtag no X, com uma narrativa fluida, emocional e jornalística, sem qualquer tom genérico ou robótico.
+
+**Contexto da Hashtag no X**:
+${hashtagContext}
+
+Crie uma NOTÍCIA COMPLETA e PROFISSIONAL sobre a hashtag "${hashtag}", com base nas discussões atuais no X no Brasil. O artigo deve capturar os temas, sentimentos e exemplos mencionados no contexto, evitando narrativas genéricas e focando no que está sendo debatido. Use exemplos de posts do X (resumidos, sem nomes reais) para embasar a narrativa e destacar o impacto no Brasil.
+
+**PADRÕES OBRIGATÓRIOS**:
+
+1. **Título principal (h1)**: Máximo 15 palavras. Evite hashtags, emojis e clickbait.
+
+2. **Introdução**: 3–4 parágrafos narrativos baseados no X, com conexão emocional real.
+
+3. **Seções com título (h2)**: 
+   - O título **vem depois dos parágrafos da seção**.
+   - Deve ser gerado **com base específica** no conteúdo da seção anterior.
+   - ❌ Nunca use padrões genéricos como “Análise”, “Impacto”, “Debate nas redes”.
+   - ✅ O título deve incluir pelo menos dois termos reais usados nos parágrafos anteriores (como regiões, grupos sociais, sentimentos ou situações discutidas).
+   - Exemplo bom: “Da Revolta à Esperança: O Clamor das Enfermeiras no Norte do Brasil”.
+
+4. **Estilo e estrutura**:
+   - Cada seção: 3–5 parágrafos robustos (4–6 linhas), sem superficialidade.
+   - Narrativa fluida e envolvente.
+   - Use 2–3 exemplos reais de posts (resumidos) do X.
+
+5. **Análise e impacto**:
+   - Mostre os dois lados do debate naturalmente.
+   - Inclua falas de especialistas reais ou fictícios (com credibilidade).
+   - Explore impactos regionais, sociais e emocionais no Brasil.
+
+6. **Dados e estatísticas**:
+   - Relacione números a histórias reais e sentimentos.
+   - Contextualize com comparações regionais ou temporais.
+
+7. **SEO e CTA**:
+   - Use 15–20 palavras-chave naturais.
+   - Gere excerpt com 150–180 caracteres.
+   - Termine com CTA provocativo.
+
+**FORMATO HTML OBRIGATÓRIO**:
+<h1>Título ultra-atraente</h1>
+<p>Parágrafo 1 - introdução</p>
+<p>Parágrafo 2 - introdução</p>
+<p>Parágrafo 3 - introdução</p>
+<p>Parágrafo 4 - introdução (se necessário)</p>
+
+<p>Parágrafo 1 da seção</p>
+<p>Parágrafo 2 da seção</p>
+<p>Parágrafo 3 da seção</p>
+<h2>Título específico e criativo com base nos parágrafos acima</h2>
+
+<p>Parágrafo 1 da próxima seção</p>
+<p>Parágrafo 2 da próxima seção</p>
+<p>Parágrafo 3 da próxima seção</p>
+<h2>Outro título gerado com base nos parágrafos acima</h2>
+
+<p>Parágrafo 1 da próxima seção</p>
+<p>Parágrafo 2 da próxima seção</p>
+<p>Parágrafo 3 da próxima seção</p>
+<h2>Outro título gerado com base nos parágrafos acima</h2>
+
+<p>Parágrafo 1 da nova seção</p>
+<p>Parágrafo 2 da nova seção</p>
+<p>Parágrafo 3 da nova seção</p>
+<h2>Mais um título contextual, gerado após os parágrafos</h2>
+
+<p>Parágrafo 1 da última seção analítica</p>
+<p>Parágrafo 2 da última seção analítica</p>
+<p>Parágrafo 3 da última seção analítica</p>
+<h2>Título final baseado no conteúdo da seção acima</h2>
+
+**IMPORTANTE**:
+- Todos os títulos <h2> devem vir somente **após** os parágrafos da seção correspondente.
+- Cada título <h2> deve refletir com precisão os temas, emoções, conflitos ou histórias citadas na seção anterior.
+- Não use títulos genéricos, mesmo que pareçam jornalísticos. Seja criativo, específico e ancorado no texto.
+
+
+<p>Conclusão envolvente com CTA instigante.</p>
+
+**INSTRUÇÕES FINAIS**:
+- Gere os títulos H2 somente **depois dos parágrafos** da seção.
+- Cada título deve ser único, descritivo, emocional e com base clara no conteúdo anterior.
+- Retorne um JSON válido com:
+
+{
+  "title": "título ultra-atraente sem hashtags",
+  "content": "artigo completo em HTML",
+  "excerpt": "resumo de 150-180 caracteres",
+  "seoKeywords": "15-20 palavras-chave, separadas por vírgulas"
+    }
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: "grok-3", // Usa Grok 3 para acesso ao X
+      messages: [
+        {
+          role: "system",
+          content:
+            "Você é um jornalista sênior do TrendNews, com acesso a posts do X em tempo real. Crie notícias profissionais, humanizadas e envolventes, refletindo discussões atuais. Responda em JSON válido.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 6000, // Aumentado para suportar artigos longos e detalhados
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+
+    if (!result.title || !result.content || !result.excerpt) {
+      throw new Error("Formato de resposta inválido do Grok 3");
+    }
+
+    // Gerar 2 imagens por artigo
+    let bannerImageUrl = await generateGeminiImage(result.title, options.hashtag, 'banner');
+    let contentImageUrl = await generateGeminiImage(result.title, options.hashtag, 'content');
+    
+    // Fallback para imagens padrão se necessário
+    if (!bannerImageUrl) {
+      bannerImageUrl = generateArticleImage(result.title, options.hashtag);
+    }
+    if (!contentImageUrl) {
+      contentImageUrl = generateArticleImage(result.title, options.hashtag);
+    }
+
+    // Gerar meta descrição SEO
+    const metaDescription = await generateSEOMetaDescription(
+      result.title,
+      result.content,
+    );
+
+    return {
+      title: result.title,
+      content: result.content,
+      excerpt: result.excerpt,
+      imageUrl: bannerImageUrl || undefined, // Backward compatibility
+      bannerImageUrl: bannerImageUrl || undefined,
+      contentImageUrl: contentImageUrl || undefined,
+      metaDescription: metaDescription || undefined,
+      seoKeywords: result.seoKeywords || undefined,
+    };
+  } catch (error) {
+    console.error("Erro ao gerar notícia com Grok 3:", error);
+    throw new Error(
+      `Falha na geração da notícia: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+    );
   }
 }

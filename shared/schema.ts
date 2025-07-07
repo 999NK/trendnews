@@ -9,7 +9,9 @@ export const articles = pgTable("articles", {
   excerpt: text("excerpt").notNull(),
   hashtag: text("hashtag").notNull(),
   status: text("status").notNull().default("draft"), // draft, under_review, approved, rejected, published
-  imageUrl: text("image_url"),
+  imageUrl: text("image_url"), // Legacy field for backward compatibility
+  bannerImageUrl: text("banner_image_url"),
+  contentImageUrl: text("content_image_url"),
   metaDescription: text("meta_description"),
   seoKeywords: text("seo_keywords"),
   published: boolean("published").default(false),
