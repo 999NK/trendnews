@@ -399,7 +399,7 @@ O ecossistema FinTech brasileiro continua em expansão acelerada, revolucionando
 
 export class DatabaseStorage implements IStorage {
   async getArticles(): Promise<Article[]> {
-    const rawArticles = await db.select().from(articles).orderBy(desc(articles.createdAt));
+    const rawArticles = await db.select().from(articles).orderBy(desc(articles.created_at));
     
     // Map snake_case to camelCase for frontend compatibility
     return rawArticles.map(article => ({
@@ -407,7 +407,11 @@ export class DatabaseStorage implements IStorage {
       bannerImageUrl: article.banner_image_url,
       contentImageUrl: article.content_image_url,
       imageUrl: article.image_url,
-      publishedAt: article.published_at
+      metaDescription: article.meta_description,
+      seoKeywords: article.seo_keywords,
+      publishedAt: article.published_at,
+      createdAt: article.created_at,
+      updatedAt: article.updated_at
     })) as Article[];
   }
 
@@ -421,7 +425,11 @@ export class DatabaseStorage implements IStorage {
       bannerImageUrl: article.banner_image_url,
       contentImageUrl: article.content_image_url,
       imageUrl: article.image_url,
-      publishedAt: article.published_at
+      metaDescription: article.meta_description,
+      seoKeywords: article.seo_keywords,
+      publishedAt: article.published_at,
+      createdAt: article.created_at,
+      updatedAt: article.updated_at
     } as Article;
   }
 

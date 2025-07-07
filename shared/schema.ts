@@ -9,15 +9,15 @@ export const articles = pgTable("articles", {
   excerpt: text("excerpt").notNull(),
   hashtag: text("hashtag").notNull(),
   status: text("status").notNull().default("draft"), // draft, under_review, approved, rejected, published
-  imageUrl: text("image_url"), // Legacy field for backward compatibility
-  bannerImageUrl: text("banner_image_url"),
-  contentImageUrl: text("content_image_url"),
-  metaDescription: text("meta_description"),
-  seoKeywords: text("seo_keywords"),
+  image_url: text("image_url"), // Database field name
+  banner_image_url: text("banner_image_url"),
+  content_image_url: text("content_image_url"),
+  meta_description: text("meta_description"),
+  seo_keywords: text("seo_keywords"),
   published: boolean("published").default(false),
-  publishedAt: timestamp("published_at"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  published_at: timestamp("published_at"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const trendingTopics = pgTable("trending_topics", {
@@ -65,7 +65,20 @@ export const insertSettingsSchema = createInsertSchema(settings).omit({
   updatedAt: true,
 });
 
-export type Article = typeof articles.$inferSelect;
+// Base type from database
+type ArticleBase = typeof articles.$inferSelect;
+
+// Extended type with camelCase fields for frontend compatibility
+export type Article = ArticleBase & {
+  imageUrl?: string | null;
+  bannerImageUrl?: string | null;
+  contentImageUrl?: string | null;
+  metaDescription?: string | null;
+  seoKeywords?: string | null;
+  publishedAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 export type InsertArticle = z.infer<typeof insertArticleSchema>;
 export type TrendingTopic = typeof trendingTopics.$inferSelect;
 export type InsertTrendingTopic = z.infer<typeof insertTrendingTopicSchema>;
