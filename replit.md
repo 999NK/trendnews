@@ -117,12 +117,14 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
-- July 07, 2025. Advanced PNG image generation with Gemini AI implemented
-  - Created local PNG image generation using Canvas and Gemini AI descriptions
-  - Images now generated based on article context with custom themes and colors
-  - Gemini analyzes content to determine optimal visual themes (política, economia, tecnologia, etc.)
-  - Canvas creates professional PNG images with gradients, typography, and branding
-  - Images saved locally and served via Express static route (/images/)
+- July 07, 2025. Gemini AI + Sharp PNG image generation implemented
+  - Gemini generates contextual SVG designs based on article content and themes
+  - Sharp converts SVG to high-quality PNG images with precise dimensions
+  - Context-aware designs with gradients, typography, and TrendNews branding  
+  - Images saved as PNG files locally and served via Express static route (/images/)
+  - Professional news-style layouts matching article topics (economia, política, tecnologia)
+  - System generates both banner (800x400) and content (400x400) images
+  - Replaced Puppeteer due to system dependencies issues in Replit environment
   - Fallback system maintained for API failures
 - July 07, 2025. Real image URLs implemented for article generation
   - Replaced SVG data URLs with actual JPEG/PNG image URLs from Picsum Photos and Placeholder.com

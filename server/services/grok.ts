@@ -192,7 +192,10 @@ Crie uma NOTÍCIA COMPLETA e PROFISSIONAL sobre a hashtag "${hashtag}", com base
       max_tokens: length === 'long' ? 4000 : (length === 'medium' ? 2500 : 1500), // Otimizado por tamanho
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "{}");
+    const contentText = response.choices[0].message.content || "{}";
+    // Clean up any potential formatting issues
+    const cleanContent = contentText.replace(/[\x00-\x1f\x7f-\x9f]/g, '').trim();
+    const result = JSON.parse(cleanContent);
 
     if (!result.title || !result.content || !result.excerpt) {
       throw new Error("Formato de resposta inválido do Grok 3");
