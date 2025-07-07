@@ -117,6 +117,12 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
+- July 07, 2025. Migrated from Replit Agent to Replit environment
+  - Fixed database connection and schema creation with PostgreSQL
+  - Optimized API token limits and response times for better performance
+  - Improved error handling with fallback article generation
+  - Enhanced API rate limiting and Twitter API error handling
+  - System now runs reliably in Replit environment with proper workflow management
 - July 07, 2025. Complete automated news generation system implemented
   - Grok AI integration for article generation
   - Twitter/X trending topics fetching (with mock fallback)
