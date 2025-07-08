@@ -87,7 +87,6 @@ export default function Blog() {
           </div>
         </div>
       </header>
-
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Breaking News Banner */}
         <div className="mb-8 bg-red-600 text-white px-6 py-3 rounded-lg">
@@ -143,7 +142,7 @@ export default function Blog() {
             {/* Artigo em Destaque */}
             {featuredArticle && (
               <section>
-                <h2 className="text-3xl font-bold text-foreground mb-6">
+                <h2 className="text-3xl font-bold mb-6 text-[#383838]">
                   Artigo em Destaque
                 </h2>
                 <Card className="overflow-hidden bg-card">
@@ -259,7 +258,6 @@ export default function Blog() {
           </div>
         )}
       </div>
-
       {/* Footer do Blog */}
       <footer className="bg-muted dark:bg-card mt-16 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
