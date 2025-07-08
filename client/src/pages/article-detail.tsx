@@ -155,14 +155,7 @@ export default function ArticleDetail() {
               </div>
             )}
 
-            {/* Debug info - remove in production */}
-            {process.env.NODE_ENV === 'development' && (
-              <div className="mb-4 p-2 bg-gray-100 text-xs">
-                <strong>Debug - Image URLs:</strong><br />
-                bannerUrl: {bannerUrl ? "✔" : "✖"}<br />
-                contentImageUrl: {contentImageUrl ? "✔" : "✖"}
-              </div>
-            )}
+            
 
             <div className="flex items-center justify-between border-t border-b border-gray-200 py-4">
               <div className="flex items-center space-x-6 text-sm text-gray-500">
