@@ -117,6 +117,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Regenerate images for existing article
+  app.post("/api/articles/:id/regenerate-images", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const article = await storage.getArticle(id);
+      
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+
+      // Import the professional image generation function
+      const { generateArticle } = await import("./services/grok");
+      
+      // Generate new professional images based on article content
+      const generateProfessionalImage = async (articleContent: string, title: string, hashtag: string, type: 'banner' | 'content'): Promise<string> => {
+        const { generateArticleImage } = await import("./services/grok");
+        
+        // Use the same analysis logic as in the main generation
+        const analysisPrompt = `Analise este artigo completo e forneça APENAS uma descrição profissional para uma foto genérica sobre o tema:
+
+ARTIGO COMPLETO:
+${articleContent}
+
+TÍTULO: ${title}
+HASHTAG: ${hashtag}
+
+Baseado no conteúdo real do artigo, descreva uma imagem ${type === 'banner' ? 'banner horizontal (800x400)' : 'quadrada (400x400)'} que seja:
+
+1. **Foto genérica e profissional** sobre o tema principal do artigo
+2. **Adequada para jornalismo brasileiro** - ambiente, contexto, pessoas brasileiras
+3. **Visualmente impactante** e **contextualmente relevante** ao conteúdo
+4. **Sem texto, logos ou elementos gráficos** - apenas a descrição da cena/ambiente/pessoas
+
+CATEGORIAS PRINCIPAIS:
+- Política: Congresso Nacional, Planalto, gabinetes, reuniões oficiais, manifestações
+- Economia: Centros financeiros, bolsa de valores, comércio, empresas, trabalhadores
+- Tecnologia: Escritórios modernos, dispositivos, startups, inovação, desenvolvimento
+- Saúde: Hospitais, laboratórios, médicos, enfermeiros, equipamentos médicos
+- Educação: Escolas, universidades, estudantes, professores, salas de aula
+- Meio Ambiente: Natureza brasileira, sustentabilidade, energia renovável
+- Esportes: Estádios, atletas, competições, torcedores, modalidades específicas
+- Sociedade: Pessoas, comunidades, vida urbana, diversidade, trabalho
+
+IMPORTANTE: A descrição deve ser específica ao tema do artigo, não genérica.
+
+Retorne APENAS a descrição da foto em português, sem introduções ou explicações:`;
+
+        const { generateArticleImage: generateGeminiImage } = await import("./services/gemini");
+        
+        try {
+          // Use Grok to analyze the article content
+          const OpenAI = (await import("openai")).default;
+          const openai = new OpenAI({
+            baseURL: "https://api.x.ai/v1",
+            apiKey: process.env.XAI_API_KEY,
+          });
+
+          const analysisResponse = await openai.chat.completions.create({
+            model: "grok-3",
+            messages: [
+              {
+                role: "system",
+                content: "Você é um especialista em fotojornalismo brasileiro. Analise artigos e sugira fotos profissionais contextualmente relevantes baseadas no conteúdo específico."
+              },
+              {
+                role: "user",
+                content: analysisPrompt
+              }
+            ],
+            max_tokens: 300,
+            temperature: 0.3
+          });
+
+          const imageDescription = analysisResponse.choices[0].message.content || "";
+          
+          // Generate image using Gemini with the contextual description
+          return await generateGeminiImage(imageDescription, hashtag, type);
+        } catch (error) {
+          console.error("Error generating professional image:", error);
+          // Fallback to generic image based on title
+          const { generateArticleImage: generateFallbackImage } = await import("./services/imageGenerator");
+          return generateFallbackImage(title, hashtag);
+        }
+      };
+
+      // Generate new images
+      const bannerImageUrl = await generateProfessionalImage(article.content, article.title, article.hashtag, 'banner');
+      const contentImageUrl = await generateProfessionalImage(article.content, article.title, article.hashtag, 'content');
+      
+      // Update article with new images
+      const updatedArticle = await storage.updateArticle(id, {
+        bannerImageUrl,
+        contentImageUrl,
+        imageUrl: bannerImageUrl // For backward compatibility
+      });
+      
+      res.json({ 
+        message: "Images regenerated successfully", 
+        article: updatedArticle,
+        bannerImageUrl,
+        contentImageUrl
+      });
+    } catch (error) {
+      console.error("Error regenerating images:", error);
+      res.status(500).json({ message: "Failed to regenerate images", error: error.message });
+    }
+  });
+
   // Get single article
   app.get("/api/articles/:id", async (req, res) => {
     try {
