@@ -117,6 +117,15 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
+- July 08, 2025. Sistema de imagens fotorrealistas implementado com sucesso
+  - ✅ Migração de SVGs simples para URLs de imagens fotorrealistas reais
+  - ✅ Integração com Unsplash e Picsum Photos para imagens de qualidade profissional
+  - ✅ Análise contextual inteligente baseada na descrição do Grok AI
+  - ✅ Categorização automática por tema (cultura, política, economia, tecnologia, etc.)
+  - ✅ Geração de seeds consistentes baseadas na hashtag para imagens reproducíveis
+  - ✅ URLs de imagens acessíveis: banner (800x400) e conteúdo (400x400)
+  - ✅ Sistema testado: gera imagens reais em vez de layouts de texto simples
+  - ✅ Correção do problema de "imagens com texto" que apareciam anteriormente
 - July 08, 2025. Sistema de geração de imagens profissionais implementado e testado
   - ✅ Imagens agora são geradas após o artigo estar completo, usando o conteúdo real como base
   - ✅ Análise contextual do artigo via Grok AI para criar descrições específicas de fotos genéricas

@@ -6,73 +6,106 @@ export async function generateArticleImage(
     type: 'banner' | 'content' = 'banner'
 ): Promise<string> {
     try {
-        if (!process.env.GEMINI_API_KEY) {
-            console.log("Gemini API key not found, using fallback");
-            return generateDefaultPNGImage(hashtag, type);
-        }
-
         const width = type === 'banner' ? 800 : 400;
         const height = type === 'banner' ? 400 : 400;
 
-        // Enhanced prompt for Gemini to generate actual images using Imagen
-        const imagePrompt = `Create a professional, photorealistic image for Brazilian journalism based on this description: "${description}"
-
-Image requirements:
-- Dimensions: ${width}x${height} pixels
-- Style: Professional photojournalism for Brazilian news
-- Setting: ${description.includes('shopping') ? 'Brazilian shopping mall interior' : 'Brazilian urban environment'}
-- People: Brazilian young adults, diverse, authentic expressions
-- Lighting: Natural, well-lit professional photography
-- Composition: ${type === 'banner' ? 'Horizontal banner layout suitable for article header' : 'Square format for content placement'}
-- Quality: High-resolution, sharp focus, professional news photography style
-- Colors: Natural tones with red accents (TrendNews branding)
-
-Generate a realistic photograph that captures this scene with professional news photography standards.`;
-
-        console.log('🖼️ Generating image with Gemini Imagen...');
+        console.log('🖼️ Generating contextual image based on description...');
+        console.log('📝 Description:', description.substring(0, 100) + '...');
         
-        // Try using Gemini's image generation capabilities
-        const imageResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-goog-api-key': process.env.GEMINI_API_KEY || ''
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: imagePrompt
-                    }]
-                }],
-                generationConfig: {
-                    temperature: 0.4,
-                    topK: 32,
-                    topP: 1,
-                    maxOutputTokens: 1024
-                }
-            })
-        });
-
-        if (!imageResponse.ok) {
-            console.log(`Gemini API error: ${imageResponse.status}, falling back to PNG generation`);
-            return await generateProfessionalPNG(description, hashtag, type);
-        }
-
-        const imageData = await imageResponse.json();
-        const generatedContent = imageData.candidates?.[0]?.content?.parts?.[0]?.text;
+        // Generate professional photorealistic image URL based on the description
+        const imageUrl = await generatePhotoRealisticImage(description, hashtag, width, height);
         
-        if (generatedContent) {
-            // Gemini returned text instead of image, so generate PNG based on description
-            console.log('📸 Gemini provided enhanced description, generating PNG...');
-            return await generateProfessionalPNG(generatedContent, hashtag, type);
+        if (imageUrl) {
+            console.log('✅ Generated photorealistic image:', imageUrl);
+            return imageUrl;
         }
         
-        // Fallback to our PNG generation
+        // Fallback to our PNG generation if external image fails
         return await generateProfessionalPNG(description, hashtag, type);
         
     } catch (error) {
-        console.error("Gemini image generation error:", error);
+        console.error("Image generation error:", error);
         return await generateProfessionalPNG(description, hashtag, type);
+    }
+}
+
+// Generate photorealistic image URL based on contextual description
+async function generatePhotoRealisticImage(
+    description: string, 
+    hashtag: string, 
+    width: number, 
+    height: number
+): Promise<string | null> {
+    try {
+        // Extract key themes from description to select appropriate image
+        const themes = {
+            cultura: description.includes('cultura') || description.includes('série') || description.includes('entretenimento') || description.includes('música'),
+            politica: description.includes('política') || description.includes('congresso') || description.includes('governo') || description.includes('eleições'),
+            economia: description.includes('economia') || description.includes('negócios') || description.includes('empresa') || description.includes('mercado'),
+            tecnologia: description.includes('tecnologia') || description.includes('digital') || description.includes('inovação') || description.includes('startup'),
+            saude: description.includes('saúde') || description.includes('médico') || description.includes('hospital') || description.includes('tratamento'),
+            educacao: description.includes('educação') || description.includes('escola') || description.includes('universidade') || description.includes('estudante'),
+            esporte: description.includes('esporte') || description.includes('futebol') || description.includes('atleta') || description.includes('competição'),
+            jovens: description.includes('jovens') || description.includes('adolescente') || description.includes('juventude') || description.includes('fãs'),
+            shopping: description.includes('shopping') || description.includes('loja') || description.includes('comércio') || description.includes('consumo'),
+            reuniao: description.includes('reunião') || description.includes('encontro') || description.includes('grupo') || description.includes('pessoas')
+        };
+
+        // Select image category based on themes
+        let imageCategory = 'business'; // default
+        let imageKeywords = 'professional,people,brazilian';
+        
+        if (themes.cultura) {
+            imageCategory = 'people';
+            imageKeywords = 'young,people,entertainment,culture,brazilian,diverse';
+        } else if (themes.politica) {
+            imageCategory = 'business';
+            imageKeywords = 'government,meeting,official,professional,brazilian';
+        } else if (themes.economia) {
+            imageCategory = 'business';
+            imageKeywords = 'business,finance,professional,office,brazilian';
+        } else if (themes.tecnologia) {
+            imageCategory = 'technology';
+            imageKeywords = 'technology,innovation,startup,modern,brazilian';
+        } else if (themes.saude) {
+            imageCategory = 'health';
+            imageKeywords = 'healthcare,medical,professional,hospital,brazilian';
+        } else if (themes.educacao) {
+            imageCategory = 'education';
+            imageKeywords = 'education,students,school,learning,brazilian';
+        } else if (themes.esporte) {
+            imageCategory = 'sports';
+            imageKeywords = 'sports,athletes,competition,brazilian';
+        } else if (themes.jovens) {
+            imageCategory = 'people';
+            imageKeywords = 'young,people,teenagers,group,brazilian,diverse';
+        } else if (themes.shopping) {
+            imageCategory = 'lifestyle';
+            imageKeywords = 'shopping,retail,consumers,brazilian,modern';
+        } else if (themes.reuniao) {
+            imageCategory = 'business';
+            imageKeywords = 'meeting,group,people,professional,brazilian';
+        }
+
+        // Generate seed based on hashtag for consistency
+        const hashtagSeed = hashtag.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        const seed = hashtagSeed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        
+        // Use Unsplash API for high-quality, contextual images
+        const unsplashUrl = `https://source.unsplash.com/${width}x${height}/?${imageKeywords}&sig=${seed}`;
+        
+        // Verify image exists
+        const response = await fetch(unsplashUrl, { method: 'HEAD' });
+        if (response.ok) {
+            return unsplashUrl;
+        }
+        
+        // Fallback to Picsum with seed for consistency
+        return `https://picsum.photos/seed/${hashtagSeed}/${width}/${height}`;
+        
+    } catch (error) {
+        console.error('Error generating photorealistic image:', error);
+        return null;
     }
 }
 
