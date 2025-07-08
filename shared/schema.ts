@@ -78,6 +78,15 @@ export type Article = ArticleBase & {
   publishedAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
+  // Include snake_case fields for backward compatibility
+  banner_image_url?: string | null;
+  content_image_url?: string | null;
+  image_url?: string | null;
+  meta_description?: string | null;
+  seo_keywords?: string | null;
+  published_at?: Date | null;
+  created_at?: Date;
+  updated_at?: Date;
 };
 export type InsertArticle = z.infer<typeof insertArticleSchema>;
 export type TrendingTopic = typeof trendingTopics.$inferSelect;

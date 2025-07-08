@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, Share2, ArrowLeft, ExternalLink } from "lucide-react";
+import { Calendar, User, Share2, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -11,31 +11,25 @@ import { ptBR } from "date-fns/locale";
 // Function to insert content image between 2nd and 3rd paragraphs
 function processArticleContent(content: string, contentImageUrl?: string): string {
   if (!contentImageUrl) return content;
-  
-  // Split content by paragraphs (p tags)
+
   const paragraphs = content.split('</p>');
-  
   if (paragraphs.length >= 3) {
-    // Insert image after the 2nd paragraph (index 1)
     const imageHtml = `
       <div class="my-8 text-center">
-        <img src="${contentImageUrl}" alt="Imagem do artigo" class="w-full max-w-2xl mx-auto h-64 object-cover rounded-lg shadow-lg" onerror="console.log('Content image failed to load:', this.src)" />
+        <img src="${contentImageUrl}" alt="Imagem relacionada ao conteúdo" class="w-full max-w-2xl mx-auto h-64 object-cover rounded-lg shadow-lg" onerror="console.warn('Erro ao carregar imagem:', this.src)" />
       </div>
     `;
-    
-    // Reconstruct content with image inserted
     const beforeImage = paragraphs.slice(0, 2).join('</p>') + '</p>';
     const afterImage = paragraphs.slice(2).join('</p>');
-    
     return beforeImage + imageHtml + afterImage;
   }
-  
+
   return content;
 }
 
 export default function ArticleDetail() {
   const [location] = useLocation();
-  const articleId = location.split('/')[2]; // Extrai ID da URL /articles/:id
+  const articleId = location.split("/")[2];
 
   const { data: article, isLoading } = useQuery({
     queryKey: [`/api/articles/${articleId}`],
@@ -77,6 +71,18 @@ export default function ArticleDetail() {
     );
   }
 
+  const bannerUrl =
+    article.bannerImageUrl ||
+    article.banner_image_url ||
+    article.imageUrl ||
+    article.image_url ||
+    null;
+
+  const contentImageUrl =
+    article.contentImageUrl ||
+    article.content_image_url ||
+    null;
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header do TrendNews */}
@@ -114,7 +120,6 @@ export default function ArticleDetail() {
 
         {/* Artigo */}
         <article className="bg-white">
-          {/* Header do Artigo */}
           <header className="mb-8">
             <div className="flex items-center space-x-2 mb-4">
               <Badge className="bg-red-100 text-red-800 border-red-200">
@@ -126,43 +131,39 @@ export default function ArticleDetail() {
                 </Badge>
               )}
             </div>
-            
+
             <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
               {article.title}
             </h1>
-            
+
             <p className="text-xl text-gray-600 mb-6 leading-relaxed">
               {article.excerpt}
             </p>
 
             {/* Banner Image */}
-            {(article.bannerImageUrl || article.banner_image_url || article.imageUrl || article.image_url) && (
+            {bannerUrl && (
               <div className="mb-8">
                 <img
-                  src={article.bannerImageUrl || article.banner_image_url || article.imageUrl || article.image_url}
-                  alt={article.title}
+                  src={bannerUrl}
+                  alt="Imagem de destaque do artigo"
                   className="w-full h-64 object-cover rounded-lg shadow-lg"
                   onError={(e) => {
-                    console.log('Banner image failed to load:', e.target.src);
-                    console.log('Article data:', article);
+                    const target = e.target as HTMLImageElement;
+                    console.warn("Erro ao carregar imagem:", target.src);
                   }}
                 />
               </div>
             )}
-            
+
             {/* Debug info - remove in production */}
             {process.env.NODE_ENV === 'development' && (
               <div className="mb-4 p-2 bg-gray-100 text-xs">
                 <strong>Debug - Image URLs:</strong><br />
-                bannerImageUrl: {article.bannerImageUrl ? 'Present' : 'None'}<br />
-                banner_image_url: {article.banner_image_url ? 'Present' : 'None'}<br />
-                contentImageUrl: {article.contentImageUrl ? 'Present' : 'None'}<br />
-                content_image_url: {article.content_image_url ? 'Present' : 'None'}<br />
-                imageUrl: {article.imageUrl ? 'Present' : 'None'}<br />
-                image_url: {article.image_url ? 'Present' : 'None'}
+                bannerUrl: {bannerUrl ? "✔" : "✖"}<br />
+                contentImageUrl: {contentImageUrl ? "✔" : "✖"}
               </div>
             )}
-            
+
             <div className="flex items-center justify-between border-t border-b border-gray-200 py-4">
               <div className="flex items-center space-x-6 text-sm text-gray-500">
                 <div className="flex items-center">
@@ -171,13 +172,13 @@ export default function ArticleDetail() {
                 </div>
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-2" />
-                  {formatDistanceToNow(new Date(article.createdAt), { 
-                    addSuffix: true, 
-                    locale: ptBR 
+                  {formatDistanceToNow(new Date(article.createdAt), {
+                    addSuffix: true,
+                    locale: ptBR,
                   })}
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Button variant="outline" size="sm">
                   <Share2 className="w-4 h-4 mr-2" />
@@ -188,21 +189,20 @@ export default function ArticleDetail() {
           </header>
 
           {/* Conteúdo do Artigo */}
-          <div 
+          <div
             className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-red-600 prose-strong:text-gray-900"
-            dangerouslySetInnerHTML={{ 
-              __html: processArticleContent(article.content, article.contentImageUrl || article.content_image_url)
+            dangerouslySetInnerHTML={{
+              __html: processArticleContent(article.content, contentImageUrl),
             }}
           />
 
-          {/* Footer do Artigo */}
+          {/* Footer */}
           <footer className="mt-12 pt-8 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-500">
                 <p>Esta notícia foi gerada automaticamente por inteligência artificial.</p>
                 <p>© {new Date().getFullYear()} TrendNews - Todos os direitos reservados</p>
               </div>
-              
               <div className="flex items-center space-x-4">
                 <Button variant="outline" size="sm">
                   <Share2 className="w-4 h-4 mr-2" />
