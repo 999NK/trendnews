@@ -36,7 +36,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const articles = await storage.getPublishedArticles();
       res.json(articles);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch published articles" });
+      console.error("Error fetching published articles:", error);
+      res.status(500).json({ message: "Failed to fetch published articles", error: error.message });
     }
   });
 

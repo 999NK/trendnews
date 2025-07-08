@@ -85,7 +85,12 @@ Retorne APENAS o código SVG completo, sem explicações:`;
         // Generate PNG using Sharp from SVG
         const { default: sharp } = await import('sharp');
         
-        await sharp(Buffer.from(svgData))
+        // Clean SVG content to prevent XML parsing errors
+        const cleanedSvg = svgData
+          .replace(/&(?!#?\w+;)/g, '&amp;') // Escape unescaped & characters
+          .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ''); // Remove control characters
+        
+        await sharp(Buffer.from(cleanedSvg))
           .png()
           .resize(width, height)
           .toFile(imagePath);

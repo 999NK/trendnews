@@ -494,12 +494,26 @@ export class DatabaseStorage implements IStorage {
       .update(articles)
       .set({
         published: true,
-        publishedAt: new Date(),
+        published_at: new Date(),
         status: "published",
       })
       .where(eq(articles.id, id))
       .returning();
-    return updated || undefined;
+    
+    if (!updated) return undefined;
+    
+    // Map snake_case to camelCase for frontend compatibility
+    return {
+      ...updated,
+      bannerImageUrl: updated.banner_image_url,
+      contentImageUrl: updated.content_image_url,
+      imageUrl: updated.image_url,
+      metaDescription: updated.meta_description,
+      seoKeywords: updated.seo_keywords,
+      publishedAt: updated.published_at,
+      createdAt: updated.created_at,
+      updatedAt: updated.updated_at
+    } as Article;
   }
 
   async unpublishArticle(id: number): Promise<Article | undefined> {
@@ -507,12 +521,26 @@ export class DatabaseStorage implements IStorage {
       .update(articles)
       .set({
         published: false,
-        publishedAt: null,
+        published_at: null,
         status: "draft",
       })
       .where(eq(articles.id, id))
       .returning();
-    return updated || undefined;
+    
+    if (!updated) return undefined;
+    
+    // Map snake_case to camelCase for frontend compatibility
+    return {
+      ...updated,
+      bannerImageUrl: updated.banner_image_url,
+      contentImageUrl: updated.content_image_url,
+      imageUrl: updated.image_url,
+      metaDescription: updated.meta_description,
+      seoKeywords: updated.seo_keywords,
+      publishedAt: updated.published_at,
+      createdAt: updated.created_at,
+      updatedAt: updated.updated_at
+    } as Article;
   }
 
   async getPublishedArticles(): Promise<Article[]> {
@@ -520,7 +548,7 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(articles)
       .where(eq(articles.published, true))
-      .orderBy(desc(articles.publishedAt));
+      .orderBy(desc(articles.published_at));
     
     // Map snake_case to camelCase for frontend compatibility
     return rawArticles.map(article => ({
@@ -528,7 +556,11 @@ export class DatabaseStorage implements IStorage {
       bannerImageUrl: article.banner_image_url,
       contentImageUrl: article.content_image_url,
       imageUrl: article.image_url,
-      publishedAt: article.published_at
+      metaDescription: article.meta_description,
+      seoKeywords: article.seo_keywords,
+      publishedAt: article.published_at,
+      createdAt: article.created_at,
+      updatedAt: article.updated_at
     })) as Article[];
   }
 
