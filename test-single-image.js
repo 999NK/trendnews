@@ -1,79 +1,48 @@
-// Quick test to regenerate images for a single article
-import { storage } from './server/storage.js';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  baseURL: "https://api.x.ai/v1",
-  apiKey: process.env.XAI_API_KEY,
-});
+// Test script to verify the new image generation system
+import { generateArticle } from './server/services/grok.js';
 
 async function testSingleArticle() {
-  try {
-    console.log('Testing professional image generation...');
+    console.log('🧪 Testing new image generation system...');
     
-    // Get the first article
-    const articles = await storage.getArticles();
-    if (articles.length === 0) {
-      console.log('No articles found');
-      return;
-    }
-    
-    const article = articles[0];
-    console.log(`Testing with article: "${article.title}"`);
-    
-    // Generate description using Grok
-    const analysisPrompt = `Analise este artigo e gere uma descrição de imagem:
-
-TÍTULO: ${article.title}
-HASHTAG: ${article.hashtag}
-CONTEÚDO: ${article.content.substring(0, 1000)}...
-
-Descreva uma foto profissional para jornalismo brasileiro sobre este tema. Retorne apenas a descrição:`;
-
-    console.log('Generating image description with Grok...');
-    const analysisResponse = await openai.chat.completions.create({
-      model: "grok-3",
-      messages: [
-        {
-          role: "system",
-          content: "Você é um especialista em fotojornalismo brasileiro."
-        },
-        {
-          role: "user", 
-          content: analysisPrompt
+    try {
+        // Generate a single article to test the new system
+        const result = await generateArticle({
+            hashtag: '#TestImageGeneration',
+            length: 'short',
+            style: 'informative',
+            language: 'pt'
+        });
+        
+        console.log('✅ Article generated successfully!');
+        console.log('📄 Title:', result.title);
+        console.log('🖼️ Banner Image:', result.bannerImageUrl);
+        console.log('🖼️ Content Image:', result.contentImageUrl);
+        
+        // Check if images are PNG files (not SVG data URLs)
+        const isBannerPNG = result.bannerImageUrl && result.bannerImageUrl.startsWith('/images/') && result.bannerImageUrl.endsWith('.png');
+        const isContentPNG = result.contentImageUrl && result.contentImageUrl.startsWith('/images/') && result.contentImageUrl.endsWith('.png');
+        
+        console.log('\n📊 IMAGE GENERATION TEST RESULTS:');
+        console.log('='.repeat(50));
+        console.log('✅ Banner Image is PNG:', isBannerPNG ? 'YES' : 'NO');
+        console.log('✅ Content Image is PNG:', isContentPNG ? 'YES' : 'NO');
+        console.log('✅ No SVG fallbacks used:', !result.bannerImageUrl?.includes('data:image/svg') ? 'YES' : 'NO');
+        
+        if (isBannerPNG && isContentPNG) {
+            console.log('\n🎉 SUCCESS: New image generation system is working correctly!');
+            console.log('Images are being generated as PNG files and saved to /images/ directory.');
+        } else {
+            console.log('\n❌ Issue detected: Some images are still using SVG fallbacks.');
+            console.log('Banner URL:', result.bannerImageUrl);
+            console.log('Content URL:', result.contentImageUrl);
         }
-      ],
-      max_tokens: 200,
-      temperature: 0.3
-    });
-
-    const imageDescription = analysisResponse.choices[0].message.content || "";
-    console.log('Generated description:', imageDescription);
-    
-    // Now generate image with Gemini
-    console.log('Generating PNG image with Gemini...');
-    const { generateArticleImage } = await import('./server/services/gemini.js');
-    const imageUrl = await generateArticleImage(imageDescription, article.hashtag, 'banner');
-    
-    console.log('Generated image URL:', imageUrl);
-    
-    // Update the article
-    const updatedArticle = await storage.updateArticle(article.id, {
-      bannerImageUrl: imageUrl,
-      imageUrl: imageUrl
-    });
-    
-    console.log('Article updated successfully:', updatedArticle ? 'Yes' : 'No');
-    
-  } catch (error) {
-    console.error('Error:', error.message);
-  }
+        
+    } catch (error) {
+        console.error('❌ Test failed:', error.message);
+    }
 }
 
 testSingleArticle().then(() => {
-  console.log('Test completed');
-  process.exit(0);
-}).catch(err => {
-  console.error('Fatal error:', err);
-  process.exit(1);
+    console.log('\n✅ Test completed!');
+    process.exit(0);
 });
