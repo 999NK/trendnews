@@ -195,7 +195,7 @@ function SystemActivity() {
                 "bg-primary"
               }`}></div>
               <div className="flex-1">
-                <p className="text-sm text-secondary">{log.message}</p>
+                <p className="text-sm text-[#d1d5db]">{log.message}</p>
                 <p className="text-xs text-gray-500 mt-1">
                   {new Date(log.createdAt).toLocaleString()}
                 </p>
