@@ -117,6 +117,12 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
+- July 08, 2025. Prompt de geração de imagem atualizado
+  - Modificado prompt do Gemini para gerar descrições contextualizadas em vez de SVG
+  - Sistema agora gera imagens PNG baseadas na descrição do tema do artigo
+  - Cores e elementos visuais adaptativos baseados no conteúdo (política, economia, tecnologia)
+  - Imagens profissionais com marca TrendNews e elementos temáticos brasileiros
+  - Corrigidos problemas de parsing de SVG que causavam erros no Sharp
 - July 07, 2025. Migration from Replit Agent to Replit environment completed
   - Fixed database connection and table creation with PostgreSQL
   - Resolved API key mapping (XAI, Twitter, Gemini) with proper environment variables
