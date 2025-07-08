@@ -104,7 +104,7 @@ export default function Blog() {
               placeholder="Pesquisar notícias..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-2 border-gray-200 focus:border-red-500"
+              className="pl-10 border-2 border-gray-200 focus:border-red-500 bg-[#3c445c00]"
             />
           </div>
         </div>
