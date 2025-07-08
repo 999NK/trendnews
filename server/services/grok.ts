@@ -61,6 +61,66 @@ export async function researchTopic(hashtag: string): Promise<string> {
   }
 }
 
+// Função para gerar imagens profissionais baseadas no conteúdo do artigo
+async function generateProfessionalImage(articleContent: string, title: string, hashtag: string, type: 'banner' | 'content'): Promise<string> {
+  try {
+    // Analisa o conteúdo do artigo para extrair temas e contexto
+    const analysisPrompt = `Analise este artigo completo e forneça APENAS uma descrição profissional para uma foto genérica sobre o tema:
+
+ARTIGO COMPLETO:
+${articleContent}
+
+TÍTULO: ${title}
+HASHTAG: ${hashtag}
+
+Baseado no conteúdo real do artigo, descreva uma imagem ${type === 'banner' ? 'banner horizontal (800x400)' : 'quadrada (400x400)'} que seja:
+
+1. **Foto genérica e profissional** sobre o tema principal do artigo
+2. **Adequada para jornalismo brasileiro** - ambiente, contexto, pessoas brasileiras
+3. **Visualmente impactante** e **contextualmente relevante** ao conteúdo
+4. **Sem texto, logos ou elementos gráficos** - apenas a descrição da cena/ambiente/pessoas
+
+CATEGORIAS PRINCIPAIS:
+- Política: Congresso Nacional, Planalto, gabinetes, reuniões oficiais, manifestações
+- Economia: Centros financeiros, bolsa de valores, comércio, empresas, trabalhadores
+- Tecnologia: Escritórios modernos, dispositivos, startups, inovação, desenvolvimento
+- Saúde: Hospitais, laboratórios, médicos, enfermeiros, equipamentos médicos
+- Educação: Escolas, universidades, estudantes, professores, salas de aula
+- Meio Ambiente: Natureza brasileira, sustentabilidade, energia renovável
+- Esportes: Estádios, atletas, competições, torcedores, modalidades específicas
+- Sociedade: Pessoas, comunidades, vida urbana, diversidade, trabalho
+
+IMPORTANTE: A descrição deve ser específica ao tema do artigo, não genérica.
+
+Retorne APENAS a descrição da foto em português, sem introduções ou explicações:`;
+
+    const analysisResponse = await openai.chat.completions.create({
+      model: "grok-3",
+      messages: [
+        {
+          role: "system",
+          content: "Você é um especialista em fotojornalismo brasileiro. Analise artigos e sugira fotos profissionais contextualmente relevantes baseadas no conteúdo específico."
+        },
+        {
+          role: "user",
+          content: analysisPrompt
+        }
+      ],
+      max_tokens: 300,
+      temperature: 0.3
+    });
+
+    const imageDescription = analysisResponse.choices[0].message.content || "";
+    
+    // Gera a imagem usando Gemini com a descrição contextual
+    return await generateGeminiImage(imageDescription, hashtag, type);
+  } catch (error) {
+    console.error("Erro ao gerar imagem profissional:", error);
+    // Fallback para imagem genérica baseada no título
+    return generateArticleImage(title, hashtag);
+  }
+}
+
 export async function generateArticle(
   options: ArticleGenerationOptions,
 ): Promise<ArticleGenerationResult> {
@@ -201,19 +261,19 @@ Crie uma NOTÍCIA COMPLETA e PROFISSIONAL sobre a hashtag "${hashtag}", com base
       throw new Error("Formato de resposta inválido do Grok 3");
     }
 
-    // Gerar 2 imagens por artigo
+    // Gerar imagens profissionais baseadas no artigo completo
     let bannerImageUrl = '';
     let contentImageUrl = '';
     
     try {
-      bannerImageUrl = await generateGeminiImage(result.title, options.hashtag, 'banner');
+      bannerImageUrl = await generateProfessionalImage(result.content, result.title, options.hashtag, 'banner');
     } catch (error) {
       console.error('Erro ao gerar imagem banner:', error);
       bannerImageUrl = generateArticleImage(result.title, options.hashtag);
     }
     
     try {
-      contentImageUrl = await generateGeminiImage(result.title, options.hashtag, 'content');
+      contentImageUrl = await generateProfessionalImage(result.content, result.title, options.hashtag, 'content');
     } catch (error) {
       console.error('Erro ao gerar imagem conteúdo:', error);
       contentImageUrl = generateArticleImage(result.title, options.hashtag);

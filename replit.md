@@ -117,6 +117,12 @@ The application uses four main tables:
 ## Changelog
 
 Changelog:
+- July 08, 2025. Sistema de geração de imagens profissionais implementado
+  - Imagens agora são geradas após o artigo estar completo, usando o conteúdo real como base
+  - Análise contextual do artigo para criar descrições específicas de fotos genéricas
+  - Categorização automática por tema (política, economia, tecnologia, saúde, etc.)
+  - Descrições focadas em ambientes e pessoas brasileiras adequadas para jornalismo
+  - Mantido sistema de fallback para garantir disponibilidade das imagens
 - July 08, 2025. Prompt de geração de imagem atualizado
   - Modificado prompt do Gemini para gerar descrições contextualizadas em vez de SVG
   - Sistema agora gera imagens PNG baseadas na descrição do tema do artigo
