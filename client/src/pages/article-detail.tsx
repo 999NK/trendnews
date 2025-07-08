@@ -193,11 +193,20 @@ export default function ArticleDetail() {
           <footer className="mt-12 pt-8 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-500">
-                <p>Esta notícia foi gerada automaticamente por inteligência artificial.</p>
+                <p>Autor: tthunter999</p>
                 <p>© {new Date().getFullYear()} TrendNews - Todos os direitos reservados</p>
               </div>
               <div className="flex items-center space-x-4">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    const baseUrl = window.location.origin;
+                    const articleUrl = window.location.href;
+                    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title + " - " + article.excerpt.substring(0, 100) + "...")}&url=${encodeURIComponent(articleUrl)}`;
+                    window.open(twitterUrl, '_blank');
+                  }}
+                >
                   <Share2 className="w-4 h-4 mr-2" />
                   Compartilhar
                 </Button>
