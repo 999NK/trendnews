@@ -7,15 +7,28 @@ import { ArrowLeft, Calendar, Hash, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Sidebar from "@/components/sidebar";
 import Header from "@/components/header";
+import { useEffect } from "react";
 
 export default function ArticleView() {
   const { id } = useParams();
   const articleId = id ? parseInt(id) : undefined;
 
-  const { data: article, isLoading, error } = useQuery({
+  const {
+    data: article,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: [`/api/articles/${articleId}`],
     enabled: !!articleId,
   });
+
+  useEffect(() => {
+    if (window?.adsbygoogle) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {}
+    }
+  }, [article]);
 
   if (isLoading) {
     return (
@@ -48,8 +61,12 @@ export default function ArticleView() {
           <div className="p-6">
             <Card>
               <CardContent className="p-12 text-center">
-                <h3 className="text-lg font-semibold text-secondary mb-2">Article Not Found</h3>
-                <p className="text-gray-500 mb-4">The article you're looking for doesn't exist.</p>
+                <h3 className="text-lg font-semibold text-secondary mb-2">
+                  Article Not Found
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  The article you're looking for doesn't exist.
+                </p>
                 <Link href="/articles">
                   <Button>
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -65,14 +82,36 @@ export default function ArticleView() {
   }
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-background relative">
       <Sidebar />
-      
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden relative">
         <Header title="Article" />
-        
+
+        {/* Google Ads - Lateral Esquerda */}
+        <div className="hidden lg:block fixed left-2 top-24 z-10">
+          <ins
+            className="adsbygoogle"
+            style={{ display: "block", width: "160px", height: "600px" }}
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="1111111111"
+            data-ad-format="vertical"
+            data-full-width-responsive="true"
+          />
+        </div>
+
+        {/* Google Ads - Lateral Direita */}
+        <div className="hidden lg:block fixed right-2 top-24 z-10">
+          <ins
+            className="adsbygoogle"
+            style={{ display: "block", width: "160px", height: "600px" }}
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="2222222222"
+            data-ad-format="vertical"
+            data-full-width-responsive="true"
+          />
+        </div>
+
         <div className="p-6 overflow-y-auto h-full">
-          {/* Back Button */}
           <div className="mb-6">
             <Link href="/articles">
               <Button variant="ghost" className="mb-4">
@@ -82,21 +121,36 @@ export default function ArticleView() {
             </Link>
           </div>
 
-          {/* Article Content */}
           <Card className="bg-surface shadow-sm">
             <CardHeader className="pb-4">
+              {/* Google Ads - Topo do Artigo */}
+              <div className="mb-4 w-full text-center">
+                <ins
+                  className="adsbygoogle"
+                  style={{ display: "block", width: "100%", height: "90px" }}
+                  data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                  data-ad-slot="3333333333"
+                  data-ad-format="horizontal"
+                  data-full-width-responsive="true"
+                />
+              </div>
+
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4">
                   <Badge variant="outline" className="text-xs">
                     <Hash className="w-3 h-3 mr-1" />
                     {article.hashtag}
                   </Badge>
-                  <Badge 
-                    variant={article.status === "published" ? "default" : "secondary"}
+                  <Badge
+                    variant={
+                      article.status === "published" ? "default" : "secondary"
+                    }
                     className={`status-badge ${
-                      article.status === "published" ? "status-success" : 
-                      article.status === "processing" ? "status-warning" : 
-                      "status-error"
+                      article.status === "published"
+                        ? "status-success"
+                        : article.status === "processing"
+                          ? "status-warning"
+                          : "status-error"
                     }`}
                   >
                     {article.status}
@@ -104,26 +158,28 @@ export default function ArticleView() {
                 </div>
                 <div className="flex items-center text-sm text-gray-500">
                   <Calendar className="w-4 h-4 mr-1" />
-                  {formatDistanceToNow(new Date(article.createdAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(article.createdAt), {
+                    addSuffix: true,
+                  })}
                 </div>
               </div>
               <CardTitle className="text-2xl font-bold text-secondary leading-tight">
                 {article.title}
               </CardTitle>
             </CardHeader>
+
             <CardContent>
-              {/* Article Excerpt */}
               <div className="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-primary">
-                <p className="text-lg text-gray-700 italic">{article.excerpt}</p>
+                <p className="text-lg text-gray-700 italic">
+                  {article.excerpt}
+                </p>
               </div>
 
-              {/* Article Content */}
-              <div 
+              <div
                 className="prose max-w-none"
                 dangerouslySetInnerHTML={{ __html: article.content }}
               />
 
-              {/* Article Meta */}
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <div className="flex items-center space-x-4">
@@ -140,6 +196,18 @@ export default function ArticleView() {
                     </span>
                   </div>
                 </div>
+              </div>
+
+              {/* Google Ads - Final do Artigo */}
+              <div className="mt-8 w-full text-center">
+                <ins
+                  className="adsbygoogle"
+                  style={{ display: "block", width: "100%", height: "90px" }}
+                  data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                  data-ad-slot="4444444444"
+                  data-ad-format="horizontal"
+                  data-full-width-responsive="true"
+                />
               </div>
             </CardContent>
           </Card>
