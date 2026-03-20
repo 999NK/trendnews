@@ -7,6 +7,12 @@ O **TrendNews** e um site de noticias automatizado que transforma postagens em t
 A plataforma monitora assuntos em alta no X (com foco no Brasil), identifica hashtags relevantes e gera noticias automaticamente usando IA.  
 O sistema tambem permite moderacao editorial, publicacao manual/automatica e acompanhamento por dashboard.
 
+</p>
+
+<p align="center">
+  <img src="https://i.ibb.co/mrMSSxDq/Captura-de-tela-2026-03-20-184659.png" alt="Imagem 6 do projeto" width="700" />
+</p>
+
 ## Como funciona
 
 1. O backend busca tendencias e hashtags do X em tempo real.
@@ -33,56 +39,6 @@ O sistema tambem permite moderacao editorial, publicacao manual/automatica e aco
 - **Automacao:** node-cron
 - **IA:** xAI (Grok) e Google Gemini
 
-## Requisitos
-
-- Node.js 18+ (recomendado Node 20+)
-- NPM
-- Banco de dados PostgreSQL
-
-## Configuracao do ambiente
-
-1. Instale as dependencias:
-
-```bash
-npm install
-```
-
-2. Crie o arquivo `.env` com base em `.env.example`.
-
-3. Defina, no minimo, as variaveis:
-
-- `DATABASE_URL`
-- `TWITTER_BEARER_TOKEN` (opcional, mas recomendado para dados em tempo real)
-- `XAI_API_KEY`
-
-## Rodando localmente
-
-```bash
-npm run dev
-```
-
-Aplicacao disponivel em `http://localhost:5000`.
-
-## Build e producao
-
-```bash
-npm run build
-npm start
-```
-
-## Banco de dados
-
-Para sincronizar schema/migracoes com o banco:
-
-```bash
-npm run db:push
-```
-
-## Estrutura resumida
-
-- `client/`: interface web (dashboard e paginas de noticias)
-- `server/`: API, servicos de automacao, integracoes com IA e Twitter/X
-- `shared/`: schemas e tipos compartilhados
 
 ## Objetivo
 
