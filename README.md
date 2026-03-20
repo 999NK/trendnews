@@ -11,7 +11,8 @@ O sistema tambem permite moderacao editorial, publicacao manual/automatica e aco
 
 <p align="center">
   <img src="https://i.ibb.co/mrMSSxDq/Captura-de-tela-2026-03-20-184659.png" alt="Imagem 6 do projeto" width="700" />
-
+</p>
+<p align="center">
   <img src="https://i.ibb.co/GQ2D95rq/Captura-de-tela-2026-03-20-184838.png" alt="Imagem 7 do projeto" width="700" />
 </p>
 
